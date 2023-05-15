@@ -1,0 +1,12 @@
+const allDetailsProvided = (data: any) => {
+    const requiredProperties = [
+      "username",
+      "email",
+      "password",
+      "firstName",
+      "lastName",
+    ];
+    return requiredProperties.every((property) => data?.hasOwnProperty(property));
+  };
+
+  export { allDetailsProvided }
