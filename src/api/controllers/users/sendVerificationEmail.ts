@@ -20,8 +20,8 @@ const sendVerificationEmail = async (
     port: 465,
     secure: true,
     auth: {
-      user: "dvir.amoss@gmail.com",
-      pass: "nizavfeubqyivutk",
+      user: process.env.EMAIL_ADDRESS,
+      pass: process.env.EMAIL_PASSWORD,
     },
     tls: { rejectUnauthorized: false },
   });
