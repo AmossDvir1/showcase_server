@@ -16,6 +16,9 @@ export interface User extends Document {
   createdAt: Date;
   updatedAt: Date;
   refreshToken: Session[];
+  activated: boolean;
+  hashedOtp: string;
+  otpExpiration: Date | null;
 }
 
 const userSchema = new Schema<User>({
@@ -62,6 +65,12 @@ const userSchema = new Schema<User>({
     default: Date.now,
   },
   refreshToken: { type: [], default: [] },
+  activated: {
+    type: Boolean,
+    default: false,
+  },
+  hashedOtp: { type: String, default: "" },
+  otpExpiration: { type: Date, default: null },
 });
 
 userSchema.set("toJSON", {

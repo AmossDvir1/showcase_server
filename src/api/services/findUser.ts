@@ -2,7 +2,7 @@ import User from "../../models/User";
 
 const findUserById = async (id: string) => {
   try {
-    return User.findOne({ _id: id });
+    return await User.findOne({ _id: id });
   } catch (err: any) {
     console.error(err.message);
   }
@@ -10,7 +10,7 @@ const findUserById = async (id: string) => {
 
 const findUserByUsername = async (username: string) => {
     try {
-        return User.findOne({ username });
+        return await User.findOne({ username });
       } catch (err: any) {
         console.error(err.message);
       }
