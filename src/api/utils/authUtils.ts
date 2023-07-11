@@ -6,7 +6,7 @@ import { Request, Response, NextFunction } from "express";
 import { Session } from "../../models/Session";
 import crypto from "crypto";
 import { findUserById } from "../services/findUser";
-import {User} from "../../models/User";
+import { User } from "../../models/User";
 import bcrypt from "bcrypt";
 
 dotenv.config();
@@ -18,6 +18,15 @@ export const COOKIE_OPTIONS: CookieOptions = {
   maxAge:
     eval(process.env.REFRESH_TOKEN_EXPIRY ?? (60 * 60 * 24).toString()) * 1000,
   sameSite: "none",
+};
+
+export const authenticateMiddleware = (req: Request, res: Response, next: NextFunction) => {
+  try {
+    passport.authenticate("local", { session: false });
+    next();
+  } catch (err) {
+    return res.status(401).json({message: "Invalid Username/Password"});
+  }
 };
 
 export function getToken(user: any): string | null {
@@ -66,7 +75,7 @@ export const checkAuthentication = async (
       // Set the decoded token on the request object for further use
       const userId = (decoded as JwtPayload)._id;
 
-      const userDetails = await findUserById(userId) as User;
+      const userDetails = (await findUserById(userId)) as User;
       req.user = userDetails;
       // Call next() to proceed to the next middleware or route handler
       return next();
@@ -74,9 +83,35 @@ export const checkAuthentication = async (
       console.error(err);
     }
   }
-
   // If the authorization header is missing or the token is invalid, send an error response
-  return res.status(401).json({ message: "Unauthorized" });
+  return res
+    .status(401)
+    .json({ message: "You've entered a wrong Username/Password" });
+};
+
+
+export const handleUnauthorizedLoginRequest = (req: Request, res: Response, next: NextFunction) => {
+  passport.authenticate("local", { session: false }, (err: Error, user: any, info: any) => {
+    if (err) {
+      return next(err);
+    }
+
+    // Check if user authentication failed
+    if (!user) {
+      // Customize the response with a custom message and data
+      return res.status(401).json({ message: "Invalid password or username", error: "invalidPasswordOrUsername" });
+    }
+
+    // If authentication succeeded, log in the user
+    req.logIn(user, { session: false }, (err) => {
+      if (err) {
+        return next(err);
+      }
+
+      // Call your loginUser function or proceed with further actions
+      next();
+    });
+  })(req, res, next);
 };
 
 export const generateHashedOtp = async (length: number) => {

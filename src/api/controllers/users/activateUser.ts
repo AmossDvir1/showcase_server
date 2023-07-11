@@ -7,15 +7,9 @@ const activateUser = async (req: Request, res: Response) => {
     const user = req.user as User;
     const { otp } = req.body;
 
-
-    // if (!otp || otp !== user.otp) {
-    //   return res.status(400).json({ message: "Invalid OTP" });
-    // }
-
     if (!otp || !await bcrypt.compare(otp, user.hashedOtp)) {
-      return res.status(400).json({ message: "Invalid OTP" });
+      return res.status(400).json({ message: "Invalid OTP", error:"InvalidOtp" });
     }
-
 
     // Validate the expiration timestamp to ensure the OTP is still valid
     if (user.otpExpiration && user.otpExpiration.getTime() < Date.now()) {

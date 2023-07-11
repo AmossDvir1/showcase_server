@@ -4,7 +4,10 @@ import passport from "passport";
 import { loginUser } from "../controllers/users/loginUser";
 import { activateUser } from "../controllers/users/activateUser";
 import { sendVerificationEmail } from "../controllers/users/sendVerificationEmail";
-import { checkAuthentication } from "../utils/authUtils";
+import {
+  checkAuthentication,
+  handleUnauthorizedLoginRequest,
+} from "../utils/authUtils";
 const userRoute = express.Router();
 // const passport = require("passport");
 
@@ -21,24 +24,26 @@ userRoute.get("/me", checkAuthentication, () => {
 // -------------------------- //
 
 userRoute.post("/create", createUser);
-// userRoute.post("/login", loginUser);
-userRoute.post("/login", passport.authenticate('local', {session: false}), loginUser);
+userRoute.post("/login", handleUnauthorizedLoginRequest, loginUser);
 
-userRoute.post("/email_verification",checkAuthentication, sendVerificationEmail);
+userRoute.post("refresh-token");
 
+userRoute.post(
+  "/email-verification",
+  checkAuthentication,
+  sendVerificationEmail
+);
 
 // -------------------------- //
 // ----- PUT Functions ------ //
 // -------------------------- //
 
-userRoute.put("/activate_user",checkAuthentication, activateUser);
-
+userRoute.put("/activate-user", checkAuthentication, activateUser);
 
 // -------------------------- //
 // ---- DELETE Functions ---- //
 // -------------------------- //
 
 // userRoute.delete("/delete", deleteUser);
-
 
 export { userRoute };

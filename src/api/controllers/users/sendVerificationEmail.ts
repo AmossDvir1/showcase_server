@@ -39,7 +39,7 @@ const sendVerificationEmail = async (
     return res.sendStatus(200);
   } catch (err) {
     console.error(err);
-    return res.status(400).send(err);
+    return res.status(500).json({message: "err"});
   }
 };
 
