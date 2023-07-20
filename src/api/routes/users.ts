@@ -8,6 +8,7 @@ import {
   checkAuthentication,
   handleUnauthorizedLoginRequest,
 } from "../utils/authUtils";
+import { checkActivation } from "../controllers/users/checkActivation";
 const userRoute = express.Router();
 // const passport = require("passport");
 
@@ -19,6 +20,7 @@ userRoute.get("/me", checkAuthentication, () => {
   console.log("hi");
 });
 
+userRoute.get("/check-activation", checkAuthentication, checkActivation);
 // -------------------------- //
 // ----- POST Functions ----- //
 // -------------------------- //
@@ -26,7 +28,7 @@ userRoute.get("/me", checkAuthentication, () => {
 userRoute.post("/create", createUser);
 userRoute.post("/login", handleUnauthorizedLoginRequest, loginUser);
 
-userRoute.post("refresh-token");
+userRoute.post("refresh-token", checkAuthentication);
 
 userRoute.post(
   "/email-verification",
