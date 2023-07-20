@@ -71,7 +71,13 @@ export const checkAuthentication = async (
 
     try {
       // Verify and decode the JWT token
-      const decoded = jwt.verify(token, process.env.JWT_SECRET as string);
+      let decoded;
+      try{
+        decoded = jwt.verify(token, process.env.JWT_SECRET as string);
+      }
+      catch(err){
+        return res.status(401).json({message: "Invalid token sent", error:"InvalidTokenSent"});
+      }
       // Set the decoded token on the request object for further use
       const userId = (decoded as JwtPayload)._id;
 
@@ -81,12 +87,15 @@ export const checkAuthentication = async (
       return next();
     } catch (err) {
       console.error(err);
+      return res
+      .status(401)
+      .json({ message: "You've entered a wrong Username/Password", error:"invalidPasswordOrUsername" });
     }
   }
   // If the authorization header is missing or the token is invalid, send an error response
   return res
-    .status(401)
-    .json({ message: "You've entered a wrong Username/Password" });
+    .status(400)
+    .json({ message: "Invalid token sent", error:"InvalidTokenSent" });
 };
 
 

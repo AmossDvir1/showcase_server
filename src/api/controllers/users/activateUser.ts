@@ -1,4 +1,4 @@
-import { Request, Response, NextFunction } from "express";
+import { Request, Response } from "express";
 import { User } from "../../../models/User";
 import bcrypt from "bcrypt";
 
@@ -7,8 +7,10 @@ const activateUser = async (req: Request, res: Response) => {
     const user = req.user as User;
     const { otp } = req.body;
 
-    if (!otp || !await bcrypt.compare(otp, user.hashedOtp)) {
-      return res.status(400).json({ message: "Invalid OTP", error:"InvalidOtp" });
+    if (!otp || !(await bcrypt.compare(otp, user.hashedOtp))) {
+      return res
+        .status(400)
+        .json({ message: "Invalid OTP", error: "InvalidOtp" });
     }
 
     // Validate the expiration timestamp to ensure the OTP is still valid
