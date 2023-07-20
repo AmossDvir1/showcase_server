@@ -23,7 +23,7 @@ app.use(
       "http://127.0.0.1:3000",
       "http://192.168.1.154:3000",
       "http://192.168.1.156:3000",
-      "https://showcase-client.vercel.app"
+      "https://showcase-world.vercel.app"
     ],
     credentials: true,
   })
