@@ -1,6 +1,5 @@
 import express from "express";
 import { createUser } from "../controllers/users/createUser";
-import passport from "passport";
 import { loginUser } from "../controllers/users/loginUser";
 import { activateUser } from "../controllers/users/activateUser";
 import { sendVerificationEmail } from "../controllers/users/sendVerificationEmail";
@@ -9,8 +8,10 @@ import {
   handleUnauthorizedLoginRequest,
 } from "../utils/authUtils";
 import { checkActivation } from "../controllers/users/checkActivation";
+import { refreshToken } from "../controllers/users/refreshToken";
+
+
 const userRoute = express.Router();
-// const passport = require("passport");
 
 // -------------------------- //
 // ----- GET Functions ------ //
@@ -28,7 +29,8 @@ userRoute.get("/check-activation", checkAuthentication, checkActivation);
 userRoute.post("/create", createUser);
 userRoute.post("/login", handleUnauthorizedLoginRequest, loginUser);
 
-userRoute.post("refresh-token", checkAuthentication);
+// POST: extend the token of the user:
+userRoute.post("/refresh-token", refreshToken);
 
 userRoute.post(
   "/email-verification",

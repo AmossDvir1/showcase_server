@@ -1,19 +1,29 @@
-import { Schema, model, Document } from "mongoose";
+import mongoose, { Document, Schema } from "mongoose";
 
-interface Session {
+export interface ISession extends Document {
+  userId: string;
   token: string;
-  createdAt: number;
+  createdAt: Date;
+  updatedAt: Date;
 }
 
-type SessionType = { token: string; createdAt: Date };
+const sessionSchema = new Schema<ISession>(
+  {
+    userId: {
+      type: String,
+      required: true,
+      unique: true,
+    },
+    token: {
+      type: String,
+      required: true,
+    },
+  },
+  {
+    timestamps: true, // This will automatically add createdAt and updatedAt fields
+  }
+);
 
-// const sessionSchema = new Schema<Session>({
-//   token: {
-//     type: String,
-//     default: "",
-//   },
-// });
+const Session = mongoose.model<ISession>("Session", sessionSchema);
 
-// export default model<Session>("Session", sessionSchema);
-
-export { Session, SessionType };
+export default Session;

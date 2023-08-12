@@ -9,4 +9,8 @@ const allDetailsProvided = (data: any) => {
     return requiredProperties.every((property) => data?.hasOwnProperty(property));
   };
 
-  export { allDetailsProvided }
+  const isNullOrUndefined = (val: any) => {
+    return (val === null || val === undefined);
+  }
+
+  export { allDetailsProvided, isNullOrUndefined }
