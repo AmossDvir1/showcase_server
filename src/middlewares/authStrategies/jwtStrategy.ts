@@ -2,7 +2,7 @@ import passport from "passport";
 import { Strategy as JwtStrategy, StrategyOptions } from "passport-jwt";
 import { ExtractJwt } from "passport-jwt";
 import User from "../../models/User";
-import { User as UserType } from "../../models/User";
+import { IUser } from "../../models/User";
 
 const opts: StrategyOptions = {
   jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
@@ -15,7 +15,7 @@ passport.use(
   new JwtStrategy(opts, function (jwt_payload, done) {
     // Check against the DB only if necessary.
     // This can be avoided if you don't want to fetch user details in each request.
-    User.findOne({ userId: jwt_payload._id }, function (err:any, user:UserType) {
+    User.findOne({ userId: jwt_payload._id }, function (err:any, user:IUser) {
       if (err) {
         console.log(err);
         return done(err, false);

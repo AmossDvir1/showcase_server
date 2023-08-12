@@ -7,6 +7,7 @@ import dotenv from "dotenv";
 import { connectToDB } from "./utils/DBConnection";
 import { userRoute } from "./api/routes/users";
 import { projectRoute } from "./api/routes/projects";
+import { searchRoute } from "./api/routes/search";
 require("./middlewares/authStrategies/localStrategy");
 require("./middlewares/authStrategies/jwtStrategy");
 
@@ -41,4 +42,5 @@ console.log(`Running on ${process.env.NODE_ENV ?? "development"} environment`);
 app.use(bodyParser.urlencoded({ limit: "50mb", extended: true }));
 app.use("/user", userRoute);
 app.use("/project", projectRoute);
+app.use("/search", searchRoute);
 app.listen(port, () => console.log(`Server is Running on Port ${port}...`));

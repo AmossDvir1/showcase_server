@@ -3,10 +3,10 @@ import { CookieOptions } from "express";
 import dotenv from "dotenv";
 import passport from "passport";
 import { Request, Response, NextFunction } from "express";
-import { Session } from "../../models/Session";
+import Session, { ISession } from "../../models/Session";
 import crypto from "crypto";
 import { findUserById } from "../services/findUser";
-import { User } from "../../models/User";
+import { IUser } from "../../models/User";
 import bcrypt from "bcrypt";
 
 dotenv.config();
@@ -20,30 +20,34 @@ export const COOKIE_OPTIONS: CookieOptions = {
   sameSite: "none",
 };
 
-export const authenticateMiddleware = (req: Request, res: Response, next: NextFunction) => {
+export const authenticateMiddleware = (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
   try {
     passport.authenticate("local", { session: false });
     next();
   } catch (err) {
-    return res.status(401).json({message: "Invalid Username/Password"});
+    return res.status(401).json({ message: "Invalid Username/Password" });
   }
 };
 
-export function getToken(user: any): string | null {
+export const generateAccessToken = (userId: string): string | null => {
   if (!process.env.JWT_SECRET || !process.env.ACCESS_TOKEN_EXPIRY) {
     return null;
   }
-  return jwt.sign(user, process.env.JWT_SECRET as string, {
+  return jwt.sign({ id: userId }, process.env.JWT_SECRET as string, {
     expiresIn: eval(process.env.ACCESS_TOKEN_EXPIRY ?? (60 * 15).toString()),
   });
 }
 
-export function getRefreshToken(user: any): Session | null {
+export const generateRefreshToken = (userId: string): ISession | null => {
   if (!process.env.REFRESH_TOKEN_SECRET || !process.env.REFRESH_TOKEN_EXPIRY) {
     return null;
   }
   const refreshToken = jwt.sign(
-    user,
+    { id: userId },
     process.env.REFRESH_TOKEN_SECRET as string,
     {
       expiresIn: eval(
@@ -51,7 +55,12 @@ export function getRefreshToken(user: any): Session | null {
       ),
     }
   );
-  return { token: refreshToken, createdAt: Date.now() };
+  return new Session({
+    userId,
+    token: refreshToken,
+    // createdAt: new Date(),
+    // updatedAt: new Date(),
+  });
 }
 
 dotenv.config();
@@ -72,55 +81,67 @@ export const checkAuthentication = async (
     try {
       // Verify and decode the JWT token
       let decoded;
-      try{
+      try {
         decoded = jwt.verify(token, process.env.JWT_SECRET as string);
-      }
-      catch(err){
-        return res.status(401).json({message: "Invalid token sent", error:"InvalidTokenSent"});
+      } catch (err) {
+        return res
+          .status(401)
+          .json({ message: "Invalid token sent", error: "InvalidTokenSent" });
       }
       // Set the decoded token on the request object for further use
-      const userId = (decoded as JwtPayload)._id;
+      const userId = (decoded as JwtPayload).id;
 
-      const userDetails = (await findUserById(userId)) as User;
+      const userDetails = (await findUserById(userId)) as IUser;
       req.user = userDetails;
       // Call next() to proceed to the next middleware or route handler
       return next();
     } catch (err) {
       console.error(err);
-      return res
-      .status(401)
-      .json({ message: "You've entered a wrong Username/Password", error:"invalidPasswordOrUsername" });
+      return res.status(401).json({
+        message: "You've entered a wrong Username/Password",
+        error: "invalidPasswordOrUsername",
+      });
     }
   }
   // If the authorization header is missing or the token is invalid, send an error response
   return res
     .status(400)
-    .json({ message: "Invalid token sent", error:"InvalidTokenSent" });
+    .json({ message: "Invalid token sent", error: "InvalidTokenSent" });
 };
 
-
-export const handleUnauthorizedLoginRequest = (req: Request, res: Response, next: NextFunction) => {
-  passport.authenticate("local", { session: false }, (err: Error, user: any, info: any) => {
-    if (err) {
-      return next(err);
-    }
-
-    // Check if user authentication failed
-    if (!user) {
-      // Customize the response with a custom message and data
-      return res.status(401).json({ message: "Invalid password or username", error: "invalidPasswordOrUsername" });
-    }
-
-    // If authentication succeeded, log in the user
-    req.logIn(user, { session: false }, (err) => {
+export const handleUnauthorizedLoginRequest = (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  passport.authenticate(
+    "local",
+    { session: false },
+    (err: Error, user: any, info: any) => {
       if (err) {
         return next(err);
       }
 
-      // Call your loginUser function or proceed with further actions
-      next();
-    });
-  })(req, res, next);
+      // Check if user authentication failed
+      if (!user) {
+        // Customize the response with a custom message and data
+        return res.status(401).json({
+          message: "Invalid password or username",
+          error: "invalidPasswordOrUsername",
+        });
+      }
+
+      // If authentication succeeded, log in the user
+      req.logIn(user, { session: false }, (err) => {
+        if (err) {
+          return next(err);
+        }
+
+        // Call your loginUser function or proceed with further actions
+        next();
+      });
+    }
+  )(req, res, next);
 };
 
 export const generateHashedOtp = async (length: number) => {

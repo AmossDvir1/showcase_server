@@ -2,31 +2,26 @@ import { Schema, model, Document } from "mongoose";
 import { v4 as uuidv4 } from "uuid";
 import passportLocalMongoose from "passport-local-mongoose";
 
-interface Session {
-  token: string;
-  createdAt: number;
-}
-export interface User extends Document {
+export interface IUser extends Document {
   username: string;
-  // _id?: string;
   email: string;
   password?: string;
   firstName: string;
   lastName: string;
   createdAt: Date;
   updatedAt: Date;
-  refreshToken: Session[];
   activated: boolean;
   hashedOtp: string;
   otpExpiration: Date | null;
 }
 
-const userSchema = new Schema<User>({
+const userSchema = new Schema<IUser>({
   _id: {
     type: String,
     default: uuidv4,
   },
   username: {
+    index: true,
     type: String,
     required: true,
     trim: true,
@@ -64,7 +59,6 @@ const userSchema = new Schema<User>({
     type: Date,
     default: Date.now,
   },
-  refreshToken: { type: [], default: [] },
   activated: {
     type: Boolean,
     default: false,
@@ -82,4 +76,4 @@ userSchema.set("toJSON", {
 
 userSchema.plugin(passportLocalMongoose);
 
-export default model<User>("User", userSchema);
+export default model<IUser>("User", userSchema);

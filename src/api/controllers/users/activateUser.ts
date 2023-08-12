@@ -1,10 +1,10 @@
 import { Request, Response } from "express";
-import { User } from "../../../models/User";
+import { IUser } from "../../../models/User";
 import bcrypt from "bcrypt";
 
 const activateUser = async (req: Request, res: Response) => {
   try {
-    const user = req.user as User;
+    const user = req.user as IUser;
     const { otp } = req.body;
 
     if (!otp || !(await bcrypt.compare(otp, user.hashedOtp))) {
