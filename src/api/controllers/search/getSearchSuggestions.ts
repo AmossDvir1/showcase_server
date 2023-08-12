@@ -2,6 +2,7 @@ import { Request, Response } from "express";
 import { rankDocuments } from "../../services/search/rank";
 import Project from "../../../models/Project";
 import User from "../../../models/User";
+import { RELEVANCE_THRESHOLD } from "../../../utils/constants";
 
 const getSearchSuggestions = async (req: Request, res: Response) => {
   let { q } = req.query;
@@ -50,19 +51,25 @@ const getSearchSuggestions = async (req: Request, res: Response) => {
     );
     console.log(
       `After filtering the non-similar results: ${JSON.stringify(
-        [...rankedProjectDocs, ...rankedUsersDocs].map((doc) => {
+        [...rankedProjectDocs.map((doc) => {
           return {
             relevance: doc.relevance,
             title: doc.document.get("title"),
             content: doc.document.get("description"),
           };
-        })
+        }), ...rankedUsersDocs.map((doc) => {
+            return {
+              relevance: doc.relevance,
+              title: doc.document.get("firstName"),
+              content: doc.document.get("lastName"),
+            };
+          })]
       )}`
     );
     const filteredRankedDocs = [
       ...rankedProjectsItems,
       ...rankedUsersItems,
-    ].filter((doc) => doc.relevance && doc.relevance > 0.1);
+    ].filter((doc) => doc.relevance && doc.relevance > RELEVANCE_THRESHOLD);
     const sortedFilteredRankedDocs = filteredRankedDocs.sort((a, b) => {
       if (a.relevance !== undefined && b.relevance !== undefined) {
         return b.relevance - a.relevance;

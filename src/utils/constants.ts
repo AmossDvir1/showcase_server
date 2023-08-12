@@ -107,3 +107,5 @@ export const generateVerificationEmailBody = (
 `
 
 export const emailSubject = "Activate Your Account - Email Verification for Showcase"
+
+export const RELEVANCE_THRESHOLD = 0.1;
