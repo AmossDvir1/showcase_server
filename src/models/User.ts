@@ -13,6 +13,7 @@ export interface IUser extends Document {
   activated: boolean;
   hashedOtp: string;
   otpExpiration: Date | null;
+  urlMapping: String;
 }
 
 const userSchema = new Schema<IUser>({
@@ -65,6 +66,7 @@ const userSchema = new Schema<IUser>({
   },
   hashedOtp: { type: String, default: "" },
   otpExpiration: { type: Date, default: null },
+  urlMapping: {type:String, unique: true, lowercase: true, index:true }
 });
 
 userSchema.set("toJSON", {

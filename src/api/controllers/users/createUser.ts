@@ -27,7 +27,7 @@ const createUser = async (req: Request, res: Response) => {
 };
 
 const registerUser = async (userData: any, res: Response) => {
-  // Check if user is already exists: 
+  // Check if user is already exists:
   if (await findUserByUsername(userData.username)) {
     return res.status(400).json({
       message: "Username is already taken. Please choose a different username.",
@@ -41,17 +41,33 @@ const registerUser = async (userData: any, res: Response) => {
     });
   }
 
-
   console.log(`Registering ${userData.username} ...`);
 
+  const existingUsersCount = await User.countDocuments({
+    firstName: userData.firstName,
+    lastName: userData.lastName,
+  });
+
+  const lowercaseFirstName = userData.firstName
+    .replace(/[^a-zA-Z]/g, "")
+    .toLowerCase();
+  const lowercaseLastName = userData.lastName
+    .replace(/[^a-zA-Z]/g, "")
+    .toLowerCase();
+
+  const urlMapping = `${lowercaseFirstName}.${lowercaseLastName}${
+    existingUsersCount && "." + existingUsersCount
+  }`;
+
+  User.updateMany();
   const user = new User({
     email: userData.email,
     username: userData.username,
     firstName: userData.firstName,
     lastName: userData.lastName,
+    urlMapping,
   });
   try {
-
     const registeredUser = await User.register(user, userData.password);
 
     const accessToken = generateAccessToken(registeredUser._id);
@@ -71,7 +87,6 @@ const registerUser = async (userData: any, res: Response) => {
     savedUser = savedUser.toObject();
     res.cookie("refreshToken", newSessionData.token, COOKIE_OPTIONS);
     return res.status(201).json({ success: true, accessToken });
-
   } catch (err: any) {
     console.log(err);
     return res.status(401).json({
