@@ -4,10 +4,25 @@ import Project from "../../../models/Project";
 import User from "../../../models/User";
 import { RELEVANCE_THRESHOLD } from "../../../utils/constants";
 
+// import {
+//   urlMappingsView,
+//   // IUrlMappingsView,
+// } from "../../../views/UrlMappingsView";
+
 const getSearchSuggestions = async (req: Request, res: Response) => {
   let { q } = req.query;
   const query = q?.toString() || "";
   if (query?.length > 0) {
+    // Usage example: Fetch aggregated user data
+    // Fetch aggregated user data
+    // try{
+      
+      // const res = (await urlMappingsView).find({});
+      // console.log(res);
+    // }
+    // catch(err: any){
+    //   console.error(err);
+    // }
     const projects = await Project.find();
     const users = await User.find();
     console.log(`Searching for relevant items for the query: ${query}`);
@@ -50,21 +65,22 @@ const getSearchSuggestions = async (req: Request, res: Response) => {
       )}`
     );
     console.log(
-      `After filtering the non-similar results: ${JSON.stringify(
-        [...rankedProjectDocs.map((doc) => {
+      `After filtering the non-similar results: ${JSON.stringify([
+        ...rankedProjectDocs.map((doc) => {
           return {
             relevance: doc.relevance,
             title: doc.document.get("title"),
             content: doc.document.get("description"),
           };
-        }), ...rankedUsersDocs.map((doc) => {
-            return {
-              relevance: doc.relevance,
-              title: doc.document.get("firstName"),
-              content: doc.document.get("lastName"),
-            };
-          })]
-      )}`
+        }),
+        ...rankedUsersDocs.map((doc) => {
+          return {
+            relevance: doc.relevance,
+            title: doc.document.get("firstName"),
+            content: doc.document.get("lastName"),
+          };
+        }),
+      ])}`
     );
     const filteredRankedDocs = [
       ...rankedProjectsItems,
@@ -82,6 +98,7 @@ const getSearchSuggestions = async (req: Request, res: Response) => {
         title: result.title,
         content: result.content,
         type: result.type,
+        ...(result.document.get("urlMapping") && {urlMapping: result.document.get("urlMapping")})
       };
     });
 

@@ -1,7 +1,7 @@
 import mongoose, { Document, Schema } from "mongoose";
 
 export interface ISession extends Document {
-  userId: string;
+  userId: Schema.Types.UUID;
   token: string;
   createdAt: Date;
   updatedAt: Date;
@@ -10,7 +10,7 @@ export interface ISession extends Document {
 const sessionSchema = new Schema<ISession>(
   {
     userId: {
-      type: String,
+      type: Schema.Types.UUID,
       required: true,
       unique: true,
     },

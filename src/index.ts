@@ -5,18 +5,22 @@ import cookieParser from "cookie-parser";
 import bodyParser from "body-parser";
 import dotenv from "dotenv";
 import { connectToDB } from "./utils/DBConnection";
-import { userRoute } from "./api/routes/users";
-import { projectRoute } from "./api/routes/projects";
-import { searchRoute } from "./api/routes/search";
+import { useRoutes } from "./utils/utils";
+
 require("./middlewares/authStrategies/localStrategy");
 require("./middlewares/authStrategies/jwtStrategy");
 
 dotenv.config();
 const port = process.env.PORT;
 const app: Express = express();
-if (!connectToDB()) {
+const connect = async () => {
+  return await connectToDB();
+};
+const db = connect();
+if (!db) {
   console.error("There was an error during Database connection");
 }
+
 app.use(
   cors({
     origin: [
@@ -40,7 +44,6 @@ app.use(passport.initialize());
 
 console.log(`Running on ${process.env.NODE_ENV ?? "development"} environment`);
 app.use(bodyParser.urlencoded({ limit: "50mb", extended: true }));
-app.use("/user", userRoute);
-app.use("/project", projectRoute);
-app.use("/search", searchRoute);
+useRoutes(app);
 app.listen(port, () => console.log(`Server is Running on Port ${port}...`));
+export { db };
