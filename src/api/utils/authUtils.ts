@@ -20,19 +20,6 @@ export const COOKIE_OPTIONS: CookieOptions = {
   sameSite: "none",
 };
 
-export const authenticateMiddleware = (
-  req: Request,
-  res: Response,
-  next: NextFunction
-) => {
-  try {
-    passport.authenticate("local", { session: false });
-    next();
-  } catch (err) {
-    return res.status(401).json({ message: "Invalid Username/Password" });
-  }
-};
-
 export const generateAccessToken = (userId: string): string | null => {
   if (!process.env.JWT_SECRET || !process.env.ACCESS_TOKEN_EXPIRY) {
     return null;

@@ -32,8 +32,6 @@ export const refreshToken = async (req: Request, res: Response) => {
     }
     // await Session.findOneAndUpdate();
     // If the refresh token is valid, generate a new refresh token and access token
-    // const newRefreshToken = generateRefreshToken(userId);
-    // const newAccessToken = generateAccessToken(userId);
     const newAccessToken = generateAccessToken(userId);
     // If the refresh token exists, then create new one and replace it.
     const newRefreshToken = generateRefreshToken(userId);
