@@ -9,8 +9,8 @@ const projectRoute = express.Router();
 // ----- GET Functions ------ //
 // -------------------------- //
 
-projectRoute.get("/me", getMyProjects);
-projectRoute.get("/projects_previews", getProjectPreviews);
+projectRoute.get("/me", checkAuthentication, getMyProjects);
+projectRoute.get("/projects_previews", checkAuthentication, getProjectPreviews);
 
 // -------------------------- //
 // ----- POST Functions ----- //

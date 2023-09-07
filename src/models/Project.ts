@@ -10,7 +10,8 @@ export interface IProject extends Document {
 }
 
 const userSchema = new Schema<IProject>({
-  userId: { type: Schema.Types.UUID, ref: "User" },
+  userId: { type: Schema.Types.UUID, ref: "User", required: true,
+},
   _id: {
     type: String,
     default: uuidv4,

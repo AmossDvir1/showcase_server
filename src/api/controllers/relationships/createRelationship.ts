@@ -37,7 +37,7 @@ const createRelationship = async (req: Request, res: Response) => {
     });
 
     await newRelationship.save();
-    res.status(201).json({ relationship: newRelationship.relState, message: "Friend request sent." });
+    res.status(201).json({ relationship: 'request_sent', message: "Friend request sent." });
   } catch (error) {
     console.error("Error sending friend request:", error);
     res.status(500).json({ message: "Error sending friend request." });

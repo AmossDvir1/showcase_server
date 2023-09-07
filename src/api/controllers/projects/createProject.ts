@@ -1,29 +1,38 @@
 import { Request, Response } from "express";
 import Project, { IProject } from "../../../models/Project";
+import { IUser } from "../../../models/User";
 
 const createProject = async (req: Request, res: Response) => {
   const data = req?.body?.projectDetails?.data;
-try{
-  console.log(data);
+  const user = req.user as IUser;
 
-  const createdProject = await create(data.projectName, data.projectDesc, !!data.isExposed);
-  if (createdProject) {
-    console.log('Project created:', createdProject);
-  } else {
-    console.log('A project with the same name already exists.');
+  try {
+    console.log(data);
+
+    const createdProject = await create(
+      data.projectName,
+      data.projectDesc,
+      !!data.isExposed,
+      user._id
+    );
+    if (createdProject) {
+      console.log("Project created:", createdProject);
+      return res.status(200).json({ message: "Project created successfuly" });
+    } else {
+      console.log("A project with the same name already exists.");
+      return res.status(400).json({ message: "Project name already exists" });
+    }
+  } catch (err: any) {
+    console.error("Error:", err);
+    return res.sendStatus(500);
   }
-}
-catch(err: any){
-  console.error('Error:', err);
-}
-  console.log(req.body);
-  res.status(200).json("blah");
 };
 
 const create = async (
   title: string,
   description: string,
-  isExposed: boolean
+  isExposed: boolean,
+  userId: string
 ) => {
   try {
     // Check if a project with the same projectName already exists
@@ -39,6 +48,7 @@ const create = async (
       title,
       description,
       isExposed,
+      userId,
     });
 
     // Save the new project to the database
