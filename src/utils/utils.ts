@@ -4,6 +4,7 @@ import { projectRoute } from "../api/routes/projects";
 import { searchRoute } from "../api/routes/search";
 import { profileRoute } from "../api/routes/profiles";
 import { relationshipRoute } from "../api/routes/friends";
+import { postRoute } from "../api/routes/posts";
 
 const useRoutes = (app: express.Express) => {
   app.use("/user", userRoute);
@@ -11,5 +12,6 @@ const useRoutes = (app: express.Express) => {
   app.use("/profiles", profileRoute);
   app.use("/search", searchRoute);
   app.use("/friends", relationshipRoute);
+  app.use("/post", postRoute);
 };
 export { useRoutes };

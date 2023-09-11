@@ -44,6 +44,8 @@ const loginUser = async (req: Request, res: Response, next: NextFunction) => {
         const newSessionData = refreshToken.toObject();
         // Remove the _id field from the newSessionData object
         delete newSessionData._id;
+        newSessionData.userId = user._id;
+
         await Session.findOneAndUpdate({ userId: user._id }, newSessionData);
         // user.refreshToken.push(refreshToken);
         await user
