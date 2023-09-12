@@ -6,23 +6,25 @@ export interface IPost extends Document {
   content: string;
   isExposed: boolean;
   _id: string;
-  userId: { type: Schema.Types.ObjectId; ref: "User" }
+  userId: { type: string; ref: "User" }
 }
 
 const userSchema = new Schema<IPost>({
-  userId: { type: Schema.Types.ObjectId, ref: "User" },
+  userId: { type: String, ref: "User" },
   _id: {
     type: String,
+    required: true,
     default: uuidv4,
   },
   title: {
     index: true,
     type: String,
-    required: true,
     minlength: 2,
   },
   content: {
+    minlength: 2,
     index: true,
+    required: true,
     type: String,
   },
   isExposed: {

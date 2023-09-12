@@ -1,6 +1,7 @@
 import { Request, Response } from "express";
 
 import { IUser } from "../../../models/User";
+import Post, { IPost } from "../../../models/Post";
 
 const createPost = async (req: Request, res: Response) => {
   const content = req?.body?.content;
@@ -9,6 +10,20 @@ const createPost = async (req: Request, res: Response) => {
     console.log("No content sent");
     return res.status(400).json({ message: "No content sent" });
   }
-  return res.status(201).json({message: "Post created successfully"});
+  console.log(`Creating post with content: ${content} ...`);
+  try {
+    // Create a new project
+    const newPost: IPost = new Post({
+      content,
+      userId:user._id
+    });
+    const savedProject = await newPost.save();
+    return res.status(201).json({ message: "Post created successfully" });
+
+
+  } catch (err: any) {
+    console.error(err);
+    return res.status(500).json({message: "Error while posting"});
+  }
 };
 export { createPost };
