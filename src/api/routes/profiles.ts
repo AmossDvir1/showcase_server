@@ -8,7 +8,7 @@ const profileRoute = express.Router();
 // ----- GET Functions ------ //
 // -------------------------- //
 
-profileRoute.get("/", checkAuthentication, getProfile);
+profileRoute.get("/:id", checkAuthentication, getProfile);
 
 // -------------------------- //
 // ----- POST Functions ----- //

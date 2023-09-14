@@ -12,13 +12,13 @@ const createPost = async (req: Request, res: Response) => {
   }
   console.log(`Creating post with content: ${content} ...`);
   try {
-    // Create a new project
+    // Create a new post
     const newPost: IPost = new Post({
       content,
       userId:user._id
     });
-    const savedProject = await newPost.save();
-    return res.status(201).json({ message: "Post created successfully" });
+    const savedPost = await newPost.save();
+    return res.status(201).json({ message: "Post created successfully", postData: {postId: savedPost._id, content: savedPost.content} });
 
 
   } catch (err: any) {
