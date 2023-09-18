@@ -6,7 +6,9 @@ export interface IPost extends Document {
   content: string;
   isExposed: boolean;
   _id: string;
-  userId: { type: string; ref: "User" }
+  userId: { type: string; ref: "User" };
+  createdAt: Date;
+  updatedAt: Date;
 }
 
 const userSchema = new Schema<IPost>({
@@ -32,6 +34,16 @@ const userSchema = new Schema<IPost>({
     type: Boolean,
     default: true,
   },
-});
+  createdAt: {
+    type: Date,
+    default: Date.now,
+  },
+  updatedAt: {
+    type: Date,
+    default: Date.now,
+  },
+},  {
+  timestamps: true, // This will enable Mongoose to automatically manage createdAt and updatedAt
+} );
 
 export default model<IPost>("Post", userSchema);

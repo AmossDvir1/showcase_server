@@ -6,10 +6,11 @@ const getMyPosts = async (req: Request, res: Response) => {
   const user = req?.user as IUser;
   try {
     const myPosts = await Post.find({ userId: user._id });
+    
     const postsData = myPosts.map((post) => ({
       postId: post._id,
       isExposed: post.isExposed,
-      userId: post.userId,
+      user: {userId: post.userId, fullName: `${user.firstName} ${user.lastName}`},
       content: post.content,
     }));
     return res.status(200).json({ posts: postsData });

@@ -13,16 +13,6 @@ const getSearchSuggestions = async (req: Request, res: Response) => {
   let { q } = req.query;
   const query = q?.toString() || "";
   if (query?.length > 0) {
-    // Usage example: Fetch aggregated user data
-    // Fetch aggregated user data
-    // try{
-      
-      // const res = (await urlMappingsView).find({});
-      // console.log(res);
-    // }
-    // catch(err: any){
-    //   console.error(err);
-    // }
     const projects = await Project.find();
     const users = await User.find();
     console.log(`Searching for relevant items for the query: ${query}`);

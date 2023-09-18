@@ -5,7 +5,7 @@ import Post from "../../../models/Post";
 const deletePost = async (req: Request, res: Response) => {
   const user = req?.user as IUser;
   const postId = req.params.id;
-  console.log(postId);
+  console.log(`deleting post with postId: ${postId}` );
   try {
     const post = await Post.findById(postId);
     if (!post) {
@@ -16,6 +16,8 @@ const deletePost = async (req: Request, res: Response) => {
     }
 
     post.deleteOne();
+    console.log('Post successfully deleted');
+    res.json({message: 'Post successfully deleted'});
   } catch (err: any) {
     res.status(500).json({message: "Failed to delete post"})
   }
