@@ -43,7 +43,7 @@ export const generateRefreshToken = (userId: string): ISession | null => {
     }
   );
   return new Session({
-    userId,
+    userId:userId.toString(),
     token: refreshToken,
     // createdAt: new Date(),
     // updatedAt: new Date(),

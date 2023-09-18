@@ -9,6 +9,7 @@ import {
 } from "../utils/authUtils";
 import { checkActivation } from "../controllers/users/checkActivation";
 import { refreshToken } from "../controllers/users/refreshToken";
+import { getUserInfo } from "../controllers/users/getUserInfo";
 
 
 const userRoute = express.Router();
@@ -17,9 +18,7 @@ const userRoute = express.Router();
 // ----- GET Functions ------ //
 // -------------------------- //
 
-userRoute.get("/me", checkAuthentication, () => {
-  console.log("hi");
-});
+userRoute.get("/me", checkAuthentication, getUserInfo);
 
 userRoute.get("/check-activation", checkAuthentication, checkActivation);
 // -------------------------- //
