@@ -15,7 +15,7 @@ const deletePost = async (req: Request, res: Response) => {
         return res.status(403).json({ message: "Unauthorized" });
     }
 
-    post.deleteOne();
+    await post.deleteOne();
     console.log('Post successfully deleted');
     res.json({message: 'Post successfully deleted'});
   } catch (err: any) {

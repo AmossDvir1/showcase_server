@@ -45,9 +45,15 @@ const loginUser = async (req: Request, res: Response, next: NextFunction) => {
         // Remove the _id field from the newSessionData object
         delete newSessionData._id;
         newSessionData.userId = user._id;
+        // await refreshToken.save();
 
-        await Session.findOneAndUpdate({ userId: user._id }, newSessionData);
-        // user.refreshToken.push(refreshToken);
+        const session = await Session.find({ userId: user._id });
+        if (session){
+          await Session.findOneAndUpdate({ userId: user._id },  {token: refreshToken.token}, { upsert: true });
+        }
+        else{
+          const newSession = await refreshToken.save();
+        }
         await user
           .save({ validateBeforeSave: true })
           .then((savedUser: IUser) => {

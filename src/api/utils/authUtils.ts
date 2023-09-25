@@ -8,6 +8,8 @@ import crypto from "crypto";
 import { findUserById } from "../services/findUser";
 import { IUser } from "../../models/User";
 import bcrypt from "bcrypt";
+import { io, userSocketMap } from "../..";
+import { Socket } from "socket.io";
 
 dotenv.config();
 
@@ -27,7 +29,7 @@ export const generateAccessToken = (userId: string): string | null => {
   return jwt.sign({ id: userId }, process.env.JWT_SECRET as string, {
     expiresIn: eval(process.env.ACCESS_TOKEN_EXPIRY ?? (60 * 15).toString()),
   });
-}
+};
 
 export const generateRefreshToken = (userId: string): ISession | null => {
   if (!process.env.REFRESH_TOKEN_SECRET || !process.env.REFRESH_TOKEN_EXPIRY) {
@@ -43,12 +45,12 @@ export const generateRefreshToken = (userId: string): ISession | null => {
     }
   );
   return new Session({
-    userId:userId.toString(),
+    userId: userId.toString(),
     token: refreshToken,
     // createdAt: new Date(),
     // updatedAt: new Date(),
   });
-}
+};
 
 dotenv.config();
 
@@ -75,11 +77,35 @@ export const checkAuthentication = async (
           .status(401)
           .json({ message: "Invalid token sent", error: "InvalidTokenSent" });
       }
-      // Set the decoded token on the request object for further use
       const userId = (decoded as JwtPayload).id;
+      const session = await Session.findOne({userId});
+      if(!session){
+        return res
+        .status(401)
+        .json({ message: "Session not found", error: "InvalidSession" });
+      }
+      // Set the decoded token on the request object for further use
 
       const userDetails = (await findUserById(userId)) as IUser;
       req.user = userDetails;
+
+      // Check if there's no existing mapping for this user
+      // if (!userSocketMap.has(userId)) {
+      //   // Associate the user's socket with their ID
+      //   io.on("connection", (socket: Socket) => {
+      //     userSocketMap.set(userId, socket);
+      //     console.log(`${userId} connected to Websocket with id ${socket.id}`)
+      //     socket.on("disconnect", () => {
+      //       console.log(socket.id + " disconnected");
+      //     });
+      //   });
+
+      //   // Add a listener for socket disconnection to remove the mapping
+      //   req.socket.on("disconnect", () => {
+      //     userSocketMap.delete(userId);
+      //   });
+      // }
+
       // Call next() to proceed to the next middleware or route handler
       return next();
     } catch (err) {
