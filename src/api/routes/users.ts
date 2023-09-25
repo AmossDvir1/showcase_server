@@ -1,6 +1,7 @@
 import express from "express";
 import { createUser } from "../controllers/users/createUser";
 import { loginUser } from "../controllers/users/loginUser";
+import { logoutUser } from "../controllers/users/logoutUser";
 import { activateUser } from "../controllers/users/activateUser";
 import { sendVerificationEmail } from "../controllers/users/sendVerificationEmail";
 import {
@@ -27,6 +28,7 @@ userRoute.get("/check-activation", checkAuthentication, checkActivation);
 
 userRoute.post("/create", createUser);
 userRoute.post("/login", handleUnauthorizedLoginRequest, loginUser);
+userRoute.post("/logout", checkAuthentication, logoutUser);
 
 // POST: extend the token of the user:
 userRoute.post("/refresh-token", refreshToken);

@@ -41,15 +41,23 @@ export const refreshToken = async (req: Request, res: Response) => {
     // Update the old refresh token in the database with the new one
     session.token = newRefreshToken.token;
     session.updatedAt = new Date();
-    await session.save();
+    // await session.save();
+    const result = await Session.findOneAndUpdate(
+      { userId },
+      {
+        token: newRefreshToken.token,
+        updatedAt: new Date(),
+      },
+      { upsert: true }
+    );
 
     // Set the new refresh token and access token in the response cookies
     res.cookie("refreshToken", newRefreshToken.token, COOKIE_OPTIONS);
     res.setHeader("Access-Control-Allow-Credentials", "true");
 
-    return res.status(200).json({ success: true, accessToken:newAccessToken });
+    return res.status(200).json({ success: true, accessToken: newAccessToken });
   } catch (err: any) {
-    console.log(err)
+    console.log(err);
     res.status(401).json({ message: "", error: "" });
   }
 };

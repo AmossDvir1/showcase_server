@@ -5,13 +5,19 @@ import Post from "../../../models/Post";
 const getMyPosts = async (req: Request, res: Response) => {
   const user = req?.user as IUser;
   try {
-    const myPosts = await Post.find({ userId: user._id });
-    
+    const myPosts = await Post.find({ userId: user._id })
+      .sort({ updatedAt: -1 }) // Sort by createdAt in descending order (latest posts first)
+      .exec();
+
     const postsData = myPosts.map((post) => ({
       postId: post._id,
       isExposed: post.isExposed,
-      user: {userId: post.userId, fullName: `${user.firstName} ${user.lastName}`},
+      user: {
+        userId: post.userId,
+        fullName: `${user.firstName} ${user.lastName}`,
+      },
       content: post.content,
+      createdAt: post.createdAt,
     }));
     return res.status(200).json({ posts: postsData });
   } catch (err: any) {

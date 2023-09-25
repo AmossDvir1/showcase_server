@@ -24,6 +24,7 @@
     "@types/passport-jwt": "^3.0.8",
     "@types/passport-local": "^1.0.35",
     "@types/string-similarity": "^4.0.0",
+    "@types/ws": "^8.5.5",
     "nodemon": "^2.0.20",
     "rimraf": "^4.1.2",
     "ts-node": "^10.9.1",
@@ -48,8 +49,10 @@
     "passport-jwt": "^4.0.1",
     "passport-local": "^1.0.0",
     "passport-local-mongoose": "^8.0.0",
+    "socket.io": "^4.7.2",
     "string-similarity": "^4.0.4",
     "uuid": "^9.0.0",
-    "uuid-mongodb": "^2.5.4"
+    "uuid-mongodb": "^2.5.4",
+    "ws": "^8.14.2"
   }
 }

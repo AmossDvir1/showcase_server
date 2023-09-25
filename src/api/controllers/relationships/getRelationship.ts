@@ -4,7 +4,7 @@ import Relationship from "../../../models/Relationship";
 
 const getRelationship = async (req: Request, res: Response) => {
   const user = req.user as IUser;
-  const userAId = user?._id; // Assuming you have middleware that attaches the authenticated user's ID to the request
+  const userAId = user?._id;
 
   const data = req?.body;
   if (!data) {
