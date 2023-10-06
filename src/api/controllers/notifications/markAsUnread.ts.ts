@@ -2,7 +2,7 @@ import { Request, Response } from "express";
 import Notification from "../../../models/Notification";
 import { IUser } from "../../../models/User";
 
-const markNotificationsAsRead = async (req: Request, res: Response) => {
+const markNotificationsAsUnread = async (req: Request, res: Response) => {
   const user = req.user as IUser;
   const userId = user._id;
   const notificationsIds = req?.body?.data?.ids
@@ -19,17 +19,17 @@ const markNotificationsAsRead = async (req: Request, res: Response) => {
               _id: notifId
             },
             update: {
-              status: "read"
+              status: "unread"
             }
           }
         }
       })
     const updated = await Notification.bulkWrite(bulkNotifs);
 
-    return res.json({ message: `${updated.matchedCount} Notifications marked as read`, ids: notificationsIds });
+    return res.json({ message: `${updated.matchedCount} Notifications marked as unread`, ids: notificationsIds });
   } catch (error) {
-    console.error("Error marking notifications as read: ", error);
-    res.status(500).json({ error: " Error marking notifications as read" });
+    console.error("Error marking notifications as unread: ", error);
+    res.status(500).json({ error: " Error marking notifications as unread" });
   }
 };
-export { markNotificationsAsRead };
+export { markNotificationsAsUnread };

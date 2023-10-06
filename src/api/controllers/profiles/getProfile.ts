@@ -22,10 +22,10 @@ const getProfile = async (req: Request, res: Response) => {
   try {
     switch (type) {
       case "profile":
-        const user = await User.find({ urlMapping });
+        const user = await User.findOne({ urlMapping });
         console.log(user);
 
-        return res.json(user);
+        return res.json({firstName: user?.firstName, lastName: user?.lastName, username: user?.username, id: user?._id});
       case "project":
         console.log("this is a project")
     }

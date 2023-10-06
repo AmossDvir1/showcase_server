@@ -13,26 +13,8 @@ const getNotifications = async (req: Request, res: Response) => {
     const notifications = await Notification.find({ recipient: userId })
       .sort("-timestamp")
       .exec();
-    // const sendersIds = notifications.map((notif) => notif.sender);
-    // const senders = await User.find({
-    //   _id: {
-    //     $in: sendersIds,
-    //   },
-    // });
 
-    // let notificationsData = notifications.map((notif) => {
-    //   let extraData: String | undefined;
-    //   switch (notif.type) {
-    //     case "friend_request":
-    //       extraData = senderData?.urlMapping;
-    //       break;
-
-    //     default:
-    //       break;
-    //   }
-    //   notificationsData.map((notif) => ({ ...notif, extraData }));
-    // });
-
+    
     return res.status(200).json({ notifications });
   } catch (error) {
     console.error("Error fetching notifications:", error);
