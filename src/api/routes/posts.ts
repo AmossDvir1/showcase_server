@@ -4,6 +4,8 @@ import { createPost } from "../controllers/posts/createPost";
 import { getMyPosts } from "../controllers/posts/getPosts";
 import { deletePost } from "../controllers/posts/deletePost";
 import { updatePost } from "../controllers/posts/updatePost";
+import { likePost } from "../controllers/posts/likePost";
+import { addComment } from "../controllers/posts/addComment";
 const postRoute = express.Router();
 
 // -------------------------- //
@@ -23,6 +25,8 @@ postRoute.post("/create", checkAuthentication, createPost);
 // -------------------------- //
 
 postRoute.put("/:id", checkAuthentication, updatePost);
+postRoute.put("/like/:id", checkAuthentication, likePost);
+postRoute.put("/comment/:id", checkAuthentication, addComment);
 
 
 // -------------------------- //

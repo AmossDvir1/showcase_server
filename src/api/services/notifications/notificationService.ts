@@ -12,20 +12,25 @@ class NotificationService {
     content?: string
   ): Promise<boolean | INotification> {
     let extraData = "";
-    if (type === "friend_request"){
-      const sender = await User.findById(senderId);
-      if (!sender) {
-        return false;
-      }
-      extraData = sender.urlMapping.toString();
-
+    const sender = await User.findById(senderId);
+    switch (type) {
+      case "friend_request":
+        if (!sender) {
+          return false;
+        }
+        extraData = sender.urlMapping.toString();
+        break;
+      case "like":
+        break;
+        
     }
+
     const notification = new Notification({
       sender: senderId,
       recipient: recipientId,
       content: content ?? "",
       type,
-      extraData:extraData
+      extraData: extraData,
     });
 
     const savedNotification = await notification.save();
