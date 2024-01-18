@@ -13,7 +13,7 @@ const createRelationship = async (req: Request, res: Response) => {
     const userB = await User.findOne({ username });
 
     if (!userB) {
-      return res.status(404).json({ message: "User not found." });
+      return res.status(400).json({ message: "User not found." });
     }
 
     const userBId = userB._id;

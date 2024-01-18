@@ -15,6 +15,8 @@ const createPost = async (req: Request, res: Response) => {
     // Create a new post
     const newPost: IPost = new Post({
       content,
+      likes:[],
+      comments:[],
       userId:user._id
     });
     const savedPost = await newPost.save();
