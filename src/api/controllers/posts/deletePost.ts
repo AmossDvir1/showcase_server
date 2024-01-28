@@ -11,7 +11,7 @@ const deletePost = async (req: Request, res: Response) => {
     if (!post) {
       return res.status(400).json({ message: "Post not found" });
     }
-    if (post.userId !== user._id){
+    if (post.user.userId !== user._id){
         return res.status(403).json({ message: "Unauthorized" });
     }
 
@@ -19,6 +19,7 @@ const deletePost = async (req: Request, res: Response) => {
     console.log('Post successfully deleted');
     res.json({message: 'Post successfully deleted'});
   } catch (err: any) {
+    console.error(err);
     res.status(500).json({message: "Failed to delete post"})
   }
 };

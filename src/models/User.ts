@@ -13,7 +13,13 @@ export interface IUser extends Document {
   activated: boolean;
   hashedOtp: string;
   otpExpiration: Date | null;
-  urlMapping: String;
+  urlMapping: string;
+}
+
+export interface IUserDetails {
+  userStr: string;
+  userId: string;
+  urlMapping: string;
 }
 
 const userSchema = new Schema<IUser>({

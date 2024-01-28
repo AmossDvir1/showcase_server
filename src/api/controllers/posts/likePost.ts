@@ -27,13 +27,13 @@ const likePost = async (req: Request, res: Response) => {
       // Add notification to the user who wrote the post
       const notif = await notificationService.createNotification(
         user._id,
-        post.userId,
+        post.user.userId,
         "like",
-        await generateContent("like", user._id, post.userId)
+        await generateContent("like", user._id, post.user.userId)
       );
       if (!notif) {
         console.error(
-          `Failed to create a friend request notification from userId ${post.userId} to ${user._id}`
+          `Failed to create a friend request notification from userId ${post.user.userId} to ${user._id}`
         );
       }
     }
@@ -44,7 +44,7 @@ const likePost = async (req: Request, res: Response) => {
       .status(200)
       .json({
         message: `Post ${hasLiked ? "disliked" : "liked"} successfully`,
-        post,
+        postData: post,
       });
   } catch (err: any) {
     console.error("Error liking/disliking post:", err);

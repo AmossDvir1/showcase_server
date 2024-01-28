@@ -15,17 +15,18 @@ const createPost = async (req: Request, res: Response) => {
     // Create a new post
     const newPost: IPost = new Post({
       content,
-      likes:[],
-      comments:[],
-      userId:user._id
+      likes: [],
+      comments: [],
+      user: { userId: user._id, userStr: `${user.firstName} ${user.lastName}`, urlMapping:user.urlMapping },
     });
     const savedPost = await newPost.save();
-    return res.status(201).json({ message: "Post created successfully", postData: {postId: savedPost._id, content: savedPost.content} });
-
-
+    return res.status(201).json({
+      message: "Post created successfully",
+      postData: { postId: savedPost._id, content: savedPost.content },
+    });
   } catch (err: any) {
     console.error(err);
-    return res.status(500).json({message: "Error while posting"});
+    return res.status(500).json({ message: "Error while posting" });
   }
 };
 export { createPost };
