@@ -1,29 +1,20 @@
-import Relationship from "../../../models/Relationship";
+import { Request, Response } from "express";
+import User, { IUser } from "../../../models/User";
+import { getUserFriendsIds } from "./getUserFriendsIds";
 
-const getUserFriends = async (userId: string) => {
-  const existingRelationship = await Relationship.find({
-    $or: [
-      {
-        user_first_id: userId,
-        relState: "friends",
-      },
-      {
-        user_second_id: userId,
-        relState: "friends",
-      },
-    ],
-  });
-  if (existingRelationship?.length > 0) {
-    const friendsIds = existingRelationship.map((rel) => {
-      if (rel.user_first_id.toString() !== userId) {
-        return rel.user_first_id.toString();
-      } else {
-        return rel.user_second_id.toString();
-      }
+const getUserFriends = async (req: Request, res: Response) => {
+  const me = req?.user as IUser;
+  const userId = req.params.userId;
+  try {
+    const friendsIds = await getUserFriendsIds(userId ?? me._id);
+    const friends = await User.find({
+      _id: { $in: friendsIds },
     });
-    return friendsIds;
+    res.json({friends});
+  } catch (err: any) {
+    console.error(err);
+    res.status(500).json({ message: "Failed to get friends" });
   }
-  return [];
 };
 
 export { getUserFriends };

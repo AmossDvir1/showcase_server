@@ -23,7 +23,7 @@ const updatePost = async (req: Request, res: Response) => {
     }
 
     // Check if the user is the owner of the post (you may need to adjust this check based on your authentication logic)
-    if (existingPost.userId.toString() !== user._id.toString()) {
+    if (existingPost.user.userId.toString() !== user._id.toString()) {
       return res.status(403).json({ message: "Unauthorized to update this post" });
     }
 
@@ -33,7 +33,7 @@ const updatePost = async (req: Request, res: Response) => {
 
     return res.status(200).json({
       message: "Post updated successfully",
-      postData: { postId: updatedPost._id, content: updatedPost.content },
+      postData:updatedPost,
     });
   } catch (err: any) {
     console.error(err);

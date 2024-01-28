@@ -7,6 +7,7 @@ const getUserInfo = async (req: Request, res: Response) => {
   if (user) {
     return res.status(200).json({
       userData: {
+        userId: user._id,
         email: user.email,
         firstName: user.firstName,
         lastName: user.lastName,

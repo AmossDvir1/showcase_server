@@ -1,9 +1,15 @@
 import { Schema, model, Document } from "mongoose";
 import { v4 as uuidv4 } from "uuid";
+import { IUserDetails } from "./User";
 
-export interface IComment {
-  id: string[];
-  commentStr: string;
+interface IComment {
+  content: string;
+  user: IUserDetails;
+  likes: string[];
+  _id: string;
+  createdAt: Date;
+  updatedAt: Date;
+  // comments: IComment[];
 }
 
 export interface IPost extends Document {
@@ -13,14 +19,13 @@ export interface IPost extends Document {
   comments: IComment[];
   isExposed: boolean;
   _id: string;
-  userId: string;
   createdAt: Date;
   updatedAt: Date;
+  user: IUserDetails;
 }
 
-const userSchema = new Schema<IPost>(
+const postSchema = new Schema<IPost>(
   {
-    userId: { type: String, ref: "User" },
     _id: {
       type: String,
       required: true,
@@ -41,15 +46,20 @@ const userSchema = new Schema<IPost>(
       type: [String],
       default: [],
     },
-    comments: {
-      type: [
-        {
-          id: { type: String, required: true, default: uuidv4 },
-          commentStr: { type: String, required: true },
+    comments: [
+      {
+        content: { type: String, required: true },
+        user: {
+          userStr: { type: String, required: true },
+          userId: { type: String, required: true },
+          urlMapping: {type: String, required: true }
         },
-      ],
-      default: [],
-    },
+        likes: { type: [String], default: [] },
+        _id: { type: String, required: true, default: uuidv4 },
+        createdAt: { type: Date, default: Date.now },
+        updatedAt: { type: Date, default: Date.now },
+      },
+    ],
     isExposed: {
       index: true,
       type: Boolean,
@@ -63,10 +73,18 @@ const userSchema = new Schema<IPost>(
       type: Date,
       default: Date.now,
     },
+    user: {
+      type: {
+        userStr: { type: String, required: true },
+        userId: { type: String, required: true },
+        urlMapping: {type: String, required: true }
+      },
+      required: true,
+    }
   },
   {
     timestamps: true, // This will enable Mongoose to automatically manage createdAt and updatedAt
   }
 );
 
-export default model<IPost>("Post", userSchema);
+export default model<IPost>("Post", postSchema);
