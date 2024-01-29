@@ -25,9 +25,15 @@ const getProfile = async (req: Request, res: Response) => {
         const user = await User.findOne({ urlMapping });
         console.log(user);
 
-        return res.json({firstName: user?.firstName, lastName: user?.lastName, username: user?.username, id: user?._id});
+        return res.json({
+          firstName: user?.firstName,
+          lastName: user?.lastName,
+          username: user?.username,
+          id: user?._id,
+          urlMapping:user?.urlMapping
+        });
       case "project":
-        console.log("this is a project")
+        console.log("this is a project");
     }
   } catch (err) {
     return res
