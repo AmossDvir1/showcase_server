@@ -12,6 +12,7 @@ const getUserInfo = async (req: Request, res: Response) => {
         firstName: user.firstName,
         lastName: user.lastName,
         username: user.username,
+        urlMapping: user.urlMapping
       },
     });
   } else {
