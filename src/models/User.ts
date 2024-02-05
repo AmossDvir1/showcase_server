@@ -1,6 +1,7 @@
 import { Schema, model, Document } from "mongoose";
 import { v4 as uuidv4 } from "uuid";
 import passportLocalMongoose from "passport-local-mongoose";
+import { IProfilePicture } from "./ProfilePicture";
 
 export interface IUser extends Document {
   username: string;
@@ -14,12 +15,14 @@ export interface IUser extends Document {
   hashedOtp: string;
   otpExpiration: Date | null;
   urlMapping: string;
+  // profilePicture: Schema.Types.
 }
 
 export interface IUserDetails {
   userStr: string;
   userId: string;
   urlMapping: string;
+  profilePicture?: IProfilePicture | null;
 }
 
 const userSchema = new Schema<IUser>({
@@ -81,6 +84,15 @@ userSchema.set("toJSON", {
     return ret;
   },
 });
+
+userSchema.virtual("profilePicture", {
+  ref: "ProfilePicture",
+  localField: "_id",
+  foreignField: "userId",
+  justOne: true, // Fetch only one profile picture per user
+});
+userSchema.set('toObject', { virtuals: true });
+userSchema.set('toJSON', { virtuals: true });
 
 userSchema.plugin(passportLocalMongoose);
 

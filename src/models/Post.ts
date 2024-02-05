@@ -1,10 +1,10 @@
 import { Schema, model, Document } from "mongoose";
 import { v4 as uuidv4 } from "uuid";
-import { IUserDetails } from "./User";
+import User, { IUser } from "./User";
 
 interface IComment {
   content: string;
-  user: IUserDetails;
+  user: string;
   likes: string[];
   _id: string;
   createdAt: Date;
@@ -21,7 +21,7 @@ export interface IPost extends Document {
   _id: string;
   createdAt: Date;
   updatedAt: Date;
-  user: IUserDetails;
+  user: string;
 }
 
 const postSchema = new Schema<IPost>(
@@ -50,9 +50,9 @@ const postSchema = new Schema<IPost>(
       {
         content: { type: String, required: true },
         user: {
-          userStr: { type: String, required: true },
-          userId: { type: String, required: true },
-          urlMapping: {type: String, required: true }
+          type: String,
+          ref: "User",
+          required: true,
         },
         likes: { type: [String], default: [] },
         _id: { type: String, required: true, default: uuidv4 },
@@ -74,11 +74,8 @@ const postSchema = new Schema<IPost>(
       default: Date.now,
     },
     user: {
-      type: {
-        userStr: { type: String, required: true },
-        userId: { type: String, required: true },
-        urlMapping: {type: String, required: true }
-      },
+      type: String,
+      ref: "User",
       required: true,
     }
   },
@@ -86,5 +83,14 @@ const postSchema = new Schema<IPost>(
     timestamps: true, // This will enable Mongoose to automatically manage createdAt and updatedAt
   }
 );
+
+postSchema.virtual("profilePicture", {
+  ref: "ProfilePicture",
+  localField: "user",
+  foreignField: "userId",
+  justOne: true, // Fetch only one profile picture per user
+});
+postSchema.set('toObject', { virtuals: true });
+postSchema.set('toJSON', { virtuals: true });
 
 export default model<IPost>("Post", postSchema);
