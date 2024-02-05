@@ -17,7 +17,7 @@ const createPost = async (req: Request, res: Response) => {
       content,
       likes: [],
       comments: [],
-      user: { userId: user._id, userStr: `${user.firstName} ${user.lastName}`, urlMapping:user.urlMapping },
+      user: user,
     });
     const savedPost = await newPost.save();
     return res.status(201).json({

@@ -1,5 +1,6 @@
 import { Request, Response } from "express";
 import User from "../../../models/User";
+import ProfilePicture from "../../../models/ProfilePicture";
 
 const getProfile = async (req: Request, res: Response) => {
   const data = req?.body;
@@ -23,19 +24,24 @@ const getProfile = async (req: Request, res: Response) => {
     switch (type) {
       case "profile":
         const user = await User.findOne({ urlMapping });
-        console.log(user);
+        if (!user){
+          return res.status(500).json({message: "No user found"});
+        }
+        const profilePicture = await ProfilePicture.findOne({userId: user._id})
 
         return res.json({
           firstName: user?.firstName,
           lastName: user?.lastName,
           username: user?.username,
           id: user?._id,
-          urlMapping:user?.urlMapping
+          urlMapping:user?.urlMapping,
+          profilePicture: profilePicture?.imageStringBase64 || null
         });
       case "project":
         console.log("this is a project");
     }
-  } catch (err) {
+  } catch (err: any) {
+    console.error(err)
     return res
       .status(400)
       .json({ error: "profileNotExists", message: "Profile not exists" });

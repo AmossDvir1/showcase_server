@@ -3,6 +3,7 @@ import { IUser } from "../../../models/User";
 import Post from "../../../models/Post";
 import notificationService from "../../services/notifications/notificationService";
 import { generateContent } from "../../services/notifications/generateContent";
+import { mapPostContent, populatePosts } from "../../../utils/utils";
 
 const likePost = async (req: Request, res: Response) => {
   const user = req?.user as IUser;
@@ -27,24 +28,27 @@ const likePost = async (req: Request, res: Response) => {
       // Add notification to the user who wrote the post
       const notif = await notificationService.createNotification(
         user._id,
-        post.user.userId,
+        post.user,
         "like",
-        await generateContent("like", user._id, post.user.userId)
+        await generateContent("like", user._id, post.user)
       );
       if (!notif) {
         console.error(
-          `Failed to create a friend request notification from userId ${post.user.userId} to ${user._id}`
+          `Failed to create a friend request notification from userId ${post.user} to ${user._id}`
         );
       }
     }
 
     // Save the updated post
     await post.save();
+    await populatePosts(post);
+    const mappedPost = await mapPostContent(post);
+
     return res
       .status(200)
       .json({
         message: `Post ${hasLiked ? "disliked" : "liked"} successfully`,
-        postData: post,
+        postData: mappedPost.postsData[0], media: mappedPost.media
       });
   } catch (err: any) {
     console.error("Error liking/disliking post:", err);

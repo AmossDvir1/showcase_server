@@ -6,14 +6,14 @@ export interface IProject extends Document {
   description: string;
   isExposed: boolean;
   _id: string;
-  userId: { type: Schema.Types.UUID; ref: "User" };
+  userId: { type: string; ref: "User" };
 }
 
 const userSchema = new Schema<IProject>({
-  userId: { type: Schema.Types.UUID, ref: "User", required: true,
-},
+  userId: { type: String, ref: "User", required: true },
   _id: {
     type: String,
+    required: true,
     default: uuidv4,
   },
   title: {

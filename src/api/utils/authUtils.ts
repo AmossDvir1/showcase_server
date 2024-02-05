@@ -87,6 +87,12 @@ export const checkAuthentication = async (
       // Set the decoded token on the request object for further use
 
       const userDetails = (await findUserById(userId)) as IUser;
+
+      // console.log(userDetails);
+      // const populatedUserDetails = await userDetails.populate("profilePicture");
+      // console.log(populatedUserDetails);
+      // req.user = populatedUserDetails;
+      
       req.user = userDetails;
 
       // Check if there's no existing mapping for this user

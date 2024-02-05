@@ -3,6 +3,7 @@ import { IUser } from "../../../models/User";
 import Post from "../../../models/Post";
 import notificationService from "../../services/notifications/notificationService";
 import { generateContent } from "../../services/notifications/generateContent";
+import { mapPostContent, populatePosts } from "../../../utils/utils";
 
 const likeComment = async (req: Request, res: Response) => {
   const user = req?.user as IUser;
@@ -13,7 +14,6 @@ const likeComment = async (req: Request, res: Response) => {
 
   try {
     const post = await Post.findById(postId);
-
     if (!post) {
       return res.status(400).json({ message: "Post not found" });
     }
@@ -38,20 +38,23 @@ const likeComment = async (req: Request, res: Response) => {
       // Add notification to the user who wrote the comment
       const notif = await notificationService.createNotification(
         user._id,
-        comment.user.userId,
+        comment.user,
         "like",
-        await generateContent("like", user._id, comment.user.userId)
+        await generateContent("like", user._id, comment.user)
       );
       if (!notif) {
         console.error(
-          `Failed to create a like notification from userId ${comment.user.userId} to ${user._id}`
+          `Failed to create a like notification from userId ${comment.user} to ${user._id}`
         );
       }
     }
 
     // Save the updated post
     await post.save();
+    await populatePosts(post);
+    // const mappedPost = mapPostContent(post);
     
+
     return res.status(200).json({
       message: `Comment ${hasLiked ? "disliked" : "liked"} successfully`,
       commentData: comment,
