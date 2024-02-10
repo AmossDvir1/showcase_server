@@ -1,6 +1,6 @@
 import { Schema, model, Document } from "mongoose";
 import { v4 as uuidv4 } from "uuid";
-import User, { IUser } from "./User";
+import { IUser } from "./User";
 
 interface IComment {
   content: string;
@@ -15,7 +15,7 @@ interface IComment {
 export interface IPost extends Document {
   title: string;
   content: string;
-  likes: string[];
+  likes: string[] | IUser[];
   comments: IComment[];
   isExposed: boolean;
   _id: string;
@@ -77,7 +77,7 @@ const postSchema = new Schema<IPost>(
       type: String,
       ref: "User",
       required: true,
-    }
+    },
   },
   {
     timestamps: true, // This will enable Mongoose to automatically manage createdAt and updatedAt
@@ -90,7 +90,7 @@ postSchema.virtual("profilePicture", {
   foreignField: "userId",
   justOne: true, // Fetch only one profile picture per user
 });
-postSchema.set('toObject', { virtuals: true });
-postSchema.set('toJSON', { virtuals: true });
+postSchema.set("toObject", { virtuals: true });
+postSchema.set("toJSON", { virtuals: true });
 
 export default model<IPost>("Post", postSchema);

@@ -2,7 +2,7 @@ import { Request, Response } from "express";
 import User from "../../../models/User";
 import ProfilePicture from "../../../models/ProfilePicture";
 
-const uploadProfilePicture = async (req: Request, res: Response) => {
+const uploadCoverPhoto = async (req: Request, res: Response) => {
   const data = req.body?.data;
   if (!data) {
     return res.sendStatus(400);
@@ -13,7 +13,7 @@ const uploadProfilePicture = async (req: Request, res: Response) => {
       userId: data.userId,
       filename: data.filename,
       imageStringBase64: data.imageStringBase64,
-      purpose: "profile"
+      purpose: "cover"
     });
     res.json({ message: "Profile picture uploaded successfully", data: image });
   } catch (err) {
@@ -21,4 +21,4 @@ const uploadProfilePicture = async (req: Request, res: Response) => {
   }
 };
 
-export { uploadProfilePicture };
+export { uploadCoverPhoto };
