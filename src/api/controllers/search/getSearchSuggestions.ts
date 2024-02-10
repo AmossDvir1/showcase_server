@@ -4,18 +4,12 @@ import Project from "../../../models/Project";
 import User from "../../../models/User";
 import { RELEVANCE_THRESHOLD } from "../../../utils/constants";
 
-// import {
-//   urlMappingsView,
-//   // IUrlMappingsView,
-// } from "../../../views/UrlMappingsView";
-
 const getSearchSuggestions = async (req: Request, res: Response) => {
   let { q } = req.query;
   const query = q?.toString() || "";
   if (query?.length > 0) {
     const projects = await Project.find();
     const users = await User.find();
-    console.log(`Searching for relevant items for the query: ${query}`);
 
     const rankedProjectDocs = rankDocuments(projects, query, [
       { field: "title", weight: 0.8 },
@@ -43,35 +37,8 @@ const getSearchSuggestions = async (req: Request, res: Response) => {
         type: "profile",
       };
     });
-    console.log(
-      `Documents found: ${JSON.stringify(
-        rankedProjectDocs.map((doc) => {
-          return {
-            relevance: doc.relevance,
-            title: doc.document.get("title"),
-            content: doc.document.get("description"),
-          };
-        })
-      )}`
-    );
-    console.log(
-      `After filtering the non-similar results: ${JSON.stringify([
-        ...rankedProjectDocs.map((doc) => {
-          return {
-            relevance: doc.relevance,
-            title: doc.document.get("title"),
-            content: doc.document.get("description"),
-          };
-        }),
-        ...rankedUsersDocs.map((doc) => {
-          return {
-            relevance: doc.relevance,
-            title: doc.document.get("firstName"),
-            content: doc.document.get("lastName"),
-          };
-        }),
-      ])}`
-    );
+
+
     const filteredRankedDocs = [
       ...rankedProjectsItems,
       ...rankedUsersItems,

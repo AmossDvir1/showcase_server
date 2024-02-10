@@ -34,6 +34,14 @@ const populatePosts = async (posts: IPost | IPost[]) => {
       path: "comments",
       populate: [{ path: "user", model: "User" }],
     });
+    populated = await populated.populate({
+      path: "comments",
+      populate: [{ path: "likes", model: "User" }],
+    });
+    populated = await populated.populate({
+      path: "likes",
+      model: "User" ,
+    });
     return populated;
   };
 

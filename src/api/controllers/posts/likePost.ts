@@ -8,7 +8,7 @@ import { mapPostContent, populatePosts } from "../../../utils/utils";
 const likePost = async (req: Request, res: Response) => {
   const user = req?.user as IUser;
   const postId = req.params.id;
-  console.log(`liking post with postId: ${postId}`);
+  
   try {
     const post = await Post.findById(postId);
     if (!post) {
@@ -19,9 +19,11 @@ const likePost = async (req: Request, res: Response) => {
 
     // If the user has liked the post, remove the like; otherwise, add the like
     if (hasLiked) {
+      console.log(`Disliking post with postId: ${postId}`);
       // Remove the user's _id from the likes array
-      post.likes = post.likes.filter((userId) => userId !== user._id);
+      post.likes = (post.likes as string[]).filter((userId) => userId !== user._id);
     } else {
+      console.log(`Liking post with postId: ${postId}`);
       // Add the user's _id to the likes array
       post.likes.push(user._id);
       

@@ -9,7 +9,7 @@ import {
 } from "../../../utils/utils";
 
 const getMyPosts = async (req: Request, res: Response) => {
-  const user = await populateUserWithPicture(req?.user as IUser);
+  const user = req?.user as IUser;
   try {
     const friendsPosts = await getFriendsPosts(user._id);
     let myPosts = await Post.find({ user: user._id });
@@ -25,7 +25,7 @@ const getMyPosts = async (req: Request, res: Response) => {
         const writer = await User.findById(post.user);
         return {
           _id: post._id,
-          liked: post.likes.includes(user._id),
+          liked: (post.likes as IUser[]).some((like) => like._id === user._id),
           likes: post.likes,
           comments: post.comments,
           isExposed: post.isExposed,
