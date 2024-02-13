@@ -1,17 +1,17 @@
 import { Schema, model, Document } from "mongoose";
 import { v4 as uuidv4 } from "uuid";
-import { ImageType } from "../global";
+import { ImagePurpose } from "../global";
 
-export interface IProfilePicture extends Document {
+export interface IPicture extends Document {
   userId: { type: string; ref: "User" };
   _id: string;
   filename: string;
   mimeType?: string;
   imageStringBase64: string;
-  purpose: ImageType;
+  purpose: ImagePurpose;
 }
 
-const profilePictureSchema = new Schema<IProfilePicture>({
+const PictureSchema = new Schema<IPicture>({
   _id: {
     type: String,
     default: uuidv4,
@@ -32,9 +32,9 @@ const profilePictureSchema = new Schema<IProfilePicture>({
   purpose: { type: String, required: true, default: "profile" },
 });
 
-const ProfilePicture = model<IProfilePicture>(
-  "ProfilePicture",
-  profilePictureSchema
+const Picture = model<IPicture>(
+  "Picture",
+  PictureSchema
 );
 
-export default ProfilePicture;
+export default Picture;

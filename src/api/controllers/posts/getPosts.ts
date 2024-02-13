@@ -5,7 +5,6 @@ import { getFriendsPosts } from "./getFriendsPosts";
 import {
   mapPostContent,
   populatePosts,
-  populateUserWithPicture,
 } from "../../../utils/utils";
 
 const getMyPosts = async (req: Request, res: Response) => {

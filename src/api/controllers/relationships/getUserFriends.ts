@@ -10,7 +10,9 @@ const getUserFriends = async (req: Request, res: Response) => {
     const friends = await User.find({
       _id: { $in: friendsIds },
     });
-    res.json({friends});
+    
+
+    return res.json({friends});
   } catch (err: any) {
     console.error(err);
     res.status(500).json({ message: "Failed to get friends" });

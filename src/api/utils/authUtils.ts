@@ -78,21 +78,16 @@ export const checkAuthentication = async (
           .json({ message: "Invalid token sent", error: "InvalidTokenSent" });
       }
       const userId = (decoded as JwtPayload).id;
-      const session = await Session.findOne({userId});
-      if(!session){
+      const session = await Session.findOne({ userId });
+      if (!session) {
         return res
-        .status(401)
-        .json({ message: "Session not found", error: "InvalidSession" });
+          .status(401)
+          .json({ message: "Session not found", error: "InvalidSession" });
       }
       // Set the decoded token on the request object for further use
 
       const userDetails = (await findUserById(userId)) as IUser;
 
-      // console.log(userDetails);
-      // const populatedUserDetails = await userDetails.populate("profilePicture");
-      // console.log(populatedUserDetails);
-      // req.user = populatedUserDetails;
-      
       req.user = userDetails;
 
       // Check if there's no existing mapping for this user
