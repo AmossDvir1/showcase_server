@@ -1,7 +1,7 @@
 import { Schema, model, Document } from "mongoose";
 import { v4 as uuidv4 } from "uuid";
 import passportLocalMongoose from "passport-local-mongoose";
-import { IProfilePicture } from "./ProfilePicture";
+import { IPicture } from "./Picture";
 
 export interface IUser extends Document {
   username: string;
@@ -22,7 +22,7 @@ export interface IUserDetails {
   userStr: string;
   userId: string;
   urlMapping: string;
-  profilePicture?: IProfilePicture | null;
+  profilePicture?: IPicture | null;
 }
 
 const userSchema = new Schema<IUser>({
@@ -86,7 +86,7 @@ userSchema.set("toJSON", {
 });
 
 userSchema.virtual("profilePicture", {
-  ref: "ProfilePicture",
+  ref: "Picture",
   localField: "_id",
   foreignField: "userId",
   justOne: true, // Fetch only one profile picture per user

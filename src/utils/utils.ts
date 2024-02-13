@@ -8,7 +8,7 @@ import { postRoute } from "../api/routes/posts";
 import { notificationRoute } from "../api/routes/notifications";
 import { IUser } from "../models/User";
 import { IPost } from "../models/Post";
-import ProfilePicture from "../models/ProfilePicture";
+import Picture from "../models/Picture";
 
 const useRoutes = (app: express.Express) => {
   app.use("/user", userRoute);
@@ -20,9 +20,6 @@ const useRoutes = (app: express.Express) => {
   app.use("/notifications", notificationRoute);
 };
 
-const populateUserWithPicture = async (user: IUser) => {
-  return await user.populate("profilePicture");
-};
 const populatePosts = async (posts: IPost | IPost[]) => {
   const populateSinglePost = async (post: IPost) => {
     let populated = await post.populate({
@@ -40,7 +37,7 @@ const populatePosts = async (posts: IPost | IPost[]) => {
     });
     populated = await populated.populate({
       path: "likes",
-      model: "User" ,
+      model: "User",
     });
     return populated;
   };
@@ -57,8 +54,11 @@ const populatePosts = async (posts: IPost | IPost[]) => {
 const mapPostContent = async (posts: IPost | IPost[]) => {
   const mapSinglePost = async (post: IPost) => {
     try {
-      // Find author's profile picture
-      const authorPicture = await ProfilePicture.findOne({ userId: post.user })
+      // Find author's picture
+      const authorPicture = await Picture.findOne({
+        userId: post.user,
+        purpose: "profile",
+      })
         .lean()
         .exec();
 
@@ -67,9 +67,10 @@ const mapPostContent = async (posts: IPost | IPost[]) => {
         ...new Set(post.comments.map((comment) => comment.user)),
       ];
 
-      // Find profile pictures for comment users
-      const commentsData = await ProfilePicture.find({
+      // Find pictures for comment users
+      const commentsData = await Picture.find({
         userId: { $in: commentUserIds },
+        purpose: "profile",
       })
         .lean()
         .exec();
@@ -103,7 +104,6 @@ const mapPostContent = async (posts: IPost | IPost[]) => {
   const postArray = Array.isArray(posts) ? posts : [posts];
   const mappedPosts = await Promise.all(postArray.map(mapSinglePost));
 
-
   // Extract unique media entries based on userId
   const uniqueMedia = Array.from(
     new Map(
@@ -118,4 +118,4 @@ const mapPostContent = async (posts: IPost | IPost[]) => {
     media: uniqueMedia,
   };
 };
-export { useRoutes, populateUserWithPicture, populatePosts, mapPostContent };
+export { useRoutes, populatePosts, mapPostContent };

@@ -32,7 +32,7 @@ const updatePost = async (req: Request, res: Response) => {
     existingPost.content = content;
     const updatedPost = await existingPost.save();
     await populatePosts(updatedPost);
-    const mappedPosts = mapPostContent(updatedPost);
+    const mappedPosts = await mapPostContent(updatedPost);
     return res.status(200).json({
       message: "Post updated successfully",
       postData:mappedPosts,
