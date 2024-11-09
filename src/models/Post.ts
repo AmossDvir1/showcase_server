@@ -85,7 +85,7 @@ const postSchema = new Schema<IPost>(
 );
 
 postSchema.virtual("profilePicture", {
-  ref: "ProfilePicture",
+  ref: "Picture",
   localField: "user",
   foreignField: "userId",
   justOne: true, // Fetch only one profile picture per user

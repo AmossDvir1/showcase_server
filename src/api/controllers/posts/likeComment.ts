@@ -4,6 +4,7 @@ import Post from "../../../models/Post";
 import notificationService from "../../services/notifications/notificationService";
 import { generateContent } from "../../services/notifications/generateContent";
 import { mapPostContent, populatePosts } from "../../../utils/utils";
+import broadcast from "../../services/socket/broadcast";
 
 const likeComment = async (req: Request, res: Response) => {
   const user = req?.user as IUser;
@@ -18,7 +19,9 @@ const likeComment = async (req: Request, res: Response) => {
       return res.status(400).json({ message: "Post not found" });
     }
 
-    const comment = post.comments.find((comment) => comment._id.toString() === commentId);
+    const comment = post.comments.find(
+      (comment) => comment._id.toString() === commentId
+    );
 
     if (!comment) {
       return res.status(400).json({ message: "Comment not found" });
@@ -47,18 +50,18 @@ const likeComment = async (req: Request, res: Response) => {
           `Failed to create a like notification from userId ${comment.user} to ${user._id}`
         );
       }
+      broadcast(notif, comment?.user, "newNotification");
     }
 
     // Save the updated post
     await post.save();
     await populatePosts(post);
     // const mappedPost = mapPostContent(post);
-    
-
-    return res.status(200).json({
+    const resData = {
       message: `Comment ${hasLiked ? "disliked" : "liked"} successfully`,
       commentData: comment,
-    });
+    };
+    return res.status(200).json(resData);
   } catch (err: any) {
     console.error("Error liking/disliking comment:", err);
     return res.status(500).json({ message: "Internal Server Error" });

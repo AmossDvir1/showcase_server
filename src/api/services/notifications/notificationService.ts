@@ -1,7 +1,6 @@
 import { NotificationType } from "../../../global";
 import Notification, { INotification } from "../../../models/Notification";
 import User from "../../../models/User";
-import { sendNotification } from "../websocketServer";
 
 class NotificationService {
   // Function to create a new notification
@@ -34,7 +33,6 @@ class NotificationService {
     });
 
     const savedNotification = await notification.save();
-    sendNotification(recipientId, "hi");
     return savedNotification;
   }
 

@@ -39,7 +39,7 @@ const confirmRelationship = async (req: Request, res: Response) => {
     // Update the relationship status to "friends"
     existingRelationship.relState = "friends";
     await existingRelationship.save();
-    return res.status(200).json({ message: "Relationship updated to friends" });
+    return res.status(200).json({ relationship: "friends", message: "Relationship updated to friends" });
   } catch (error: any) {
     console.error(error);
     return res.status(500).json({ message: "Internal server error" });

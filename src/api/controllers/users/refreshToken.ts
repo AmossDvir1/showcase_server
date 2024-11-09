@@ -11,6 +11,7 @@ require("dotenv").config();
 export const refreshToken = async (req: Request, res: Response) => {
   // Take the refreshToken out of the cookie:
   const cookies = req.signedCookies;
+  console.log(cookies)
   const refreshToken = cookies?.refreshToken?.toString();
 
   if (!refreshToken) {

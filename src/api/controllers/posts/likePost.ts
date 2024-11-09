@@ -4,6 +4,7 @@ import Post from "../../../models/Post";
 import notificationService from "../../services/notifications/notificationService";
 import { generateContent } from "../../services/notifications/generateContent";
 import { mapPostContent, populatePosts } from "../../../utils/utils";
+import broadcast from "../../services/socket/broadcast";
 
 const likePost = async (req: Request, res: Response) => {
   const user = req?.user as IUser;
@@ -39,6 +40,7 @@ const likePost = async (req: Request, res: Response) => {
           `Failed to create a friend request notification from userId ${post.user} to ${user._id}`
         );
       }
+      broadcast(notif, post.user, "newNotification");
     }
 
     // Save the updated post
