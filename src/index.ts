@@ -8,9 +8,12 @@ import { connectToDB } from "./utils/DBConnection";
 import { useRoutes } from "./utils/utils";
 import {Socket, Server} from "socket.io"
 import { createServer } from "http";
-import { DefaultEventsMap } from "socket.io/dist/typed-events";
 require("./middlewares/authStrategies/localStrategy");
 require("./middlewares/authStrategies/jwtStrategy");
+import websocketAuth from "./middlewares/websocketAuth"
+import { addSocketConnection, getSocketByUserId, removeSocketConnection } from "./api/services/socket/socketConnections";
+import { getOnlineFriendsSockets } from "./api/services/socket/retrieveOnlineFriends";
+import { initializeSocket } from "./api/services/socket/socketHandler";
 
 dotenv.config();
 const port = process.env.PORT;
@@ -29,7 +32,9 @@ app.use(
       "http://localhost:3000",
       "http://127.0.0.1:3000",
       "http://192.168.1.154:3000",
+      "http://192.168.1.153:3000",
       "http://192.168.1.156:3000",
+      "http://192.168.1.167:3000",
     ],
     credentials: true,
   })
@@ -48,24 +53,17 @@ app.use(bodyParser.urlencoded({ limit: "50mb", extended: true }));
 
 // Websocket connection: 
 console.log("Initializing Websocket...");
-const http = createServer(app);
-export const io = new Server(http, {
+const httpServer = createServer(app);
+export const io = new Server(httpServer, {
   cors: {
-    origin: 'http://localhost:3000',
-    methods:['GET','POST']
+    origin: '*',
+    methods: ["GET", "POST"],
+    credentials: true
   }
 });
 
-// Maintain a mapping of user IDs to sockets
-export const userSocketMap = new Map<string, Socket>();
-// io.on("connection", (socket: Socket) => {
-//   console.log(socket.id + " connected to Websocket")
-//   socket.on("disconnect", () => {
-//     console.log(socket.id + " disconnected");
-//   });
-// });
-
+initializeSocket(io);
 
 useRoutes(app);
-app.listen(port, () => console.log(`Server is Running on Port ${port}...`));
+httpServer.listen(port, () => console.log(`Server is Running on Port ${port}...`));
 export { db };

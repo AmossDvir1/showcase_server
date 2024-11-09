@@ -8,8 +8,7 @@ import crypto from "crypto";
 import { findUserById } from "../services/findUser";
 import { IUser } from "../../models/User";
 import bcrypt from "bcrypt";
-import { io, userSocketMap } from "../..";
-import { Socket } from "socket.io";
+
 
 dotenv.config();
 
@@ -21,6 +20,7 @@ export const COOKIE_OPTIONS: CookieOptions = {
     eval(process.env.REFRESH_TOKEN_EXPIRY ?? (60 * 60 * 24).toString()) * 1000,
   sameSite: "none",
 };
+
 
 export const generateAccessToken = (userId: string): string | null => {
   if (!process.env.JWT_SECRET || !process.env.ACCESS_TOKEN_EXPIRY) {
@@ -89,23 +89,6 @@ export const checkAuthentication = async (
       const userDetails = (await findUserById(userId)) as IUser;
 
       req.user = userDetails;
-
-      // Check if there's no existing mapping for this user
-      // if (!userSocketMap.has(userId)) {
-      //   // Associate the user's socket with their ID
-      //   io.on("connection", (socket: Socket) => {
-      //     userSocketMap.set(userId, socket);
-      //     console.log(`${userId} connected to Websocket with id ${socket.id}`)
-      //     socket.on("disconnect", () => {
-      //       console.log(socket.id + " disconnected");
-      //     });
-      //   });
-
-      //   // Add a listener for socket disconnection to remove the mapping
-      //   req.socket.on("disconnect", () => {
-      //     userSocketMap.delete(userId);
-      //   });
-      // }
 
       // Call next() to proceed to the next middleware or route handler
       return next();

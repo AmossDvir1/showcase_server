@@ -6,7 +6,6 @@ import { profileRoute } from "../api/routes/profiles";
 import { relationshipRoute } from "../api/routes/friends";
 import { postRoute } from "../api/routes/posts";
 import { notificationRoute } from "../api/routes/notifications";
-import { IUser } from "../models/User";
 import { IPost } from "../models/Post";
 import Picture from "../models/Picture";
 
@@ -75,24 +74,13 @@ const mapPostContent = async (posts: IPost | IPost[]) => {
         .lean()
         .exec();
 
-      // Map commentsData to a simplified format
-      const mappedCommentsData = commentsData.map((pic) => ({
-        userId: pic.userId,
-        imageStringBase64: pic.imageStringBase64,
-      }));
-
       return {
         post: post.toObject(),
         media: [
           ...(authorPicture
-            ? [
-                {
-                  userId: authorPicture.userId,
-                  imageStringBase64: authorPicture.imageStringBase64,
-                },
-              ]
+            ? [authorPicture]
             : []),
-          ...mappedCommentsData,
+          ...commentsData,
         ],
       };
     } catch (error) {

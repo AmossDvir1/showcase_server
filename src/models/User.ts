@@ -75,7 +75,7 @@ const userSchema = new Schema<IUser>({
   },
   hashedOtp: { type: String, default: "" },
   otpExpiration: { type: Date, default: null },
-  urlMapping: {type:String, unique: true, lowercase: true, index:true }
+  urlMapping: { type: String, unique: true, lowercase: true, index: true },
 });
 
 userSchema.set("toJSON", {
@@ -91,8 +91,17 @@ userSchema.virtual("profilePicture", {
   foreignField: "userId",
   justOne: true, // Fetch only one profile picture per user
 });
-userSchema.set('toObject', { virtuals: true });
-userSchema.set('toJSON', { virtuals: true });
+userSchema.set("toObject", { virtuals: true });
+userSchema.set("toJSON", {
+  virtuals: true,
+  transform: (doc, ret) => {
+    // Remove sensitive fields
+    delete ret.password;
+    delete ret.hashedOtp;
+    delete ret.otpExpiration;
+    return ret;
+  },
+});
 
 userSchema.plugin(passportLocalMongoose);
 
