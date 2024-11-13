@@ -1,7 +1,13 @@
 import { Server, Socket } from "socket.io";
 import websocketAuth from "../../../middlewares/websocketAuth";
-import { addSocketConnection, getSocketIdByUserId, removeSocketConnection } from "./socketConnections";
+import {
+  addSocketConnection,
+  getSocketIdByUserId,
+  removeSocketConnection,
+} from "./socketConnections";
 import { getOnlineFriendsSockets } from "./retrieveOnlineFriends";
+import { IUser } from "../../../models/User";
+import { sendMessage, getConversation } from "./chatEventHandler";
 
 export const initializeSocket = (io: Server) => {
   io.use(websocketAuth);
@@ -18,11 +24,24 @@ export const initializeSocket = (io: Server) => {
     socket.emit("onlineFriends", onlineFriends);
 
     // Notify the user's friends that they are online
-    onlineFriends.forEach((friend) => {
+    onlineFriends.forEach(async (friend: IUser) => {
       const friendSocketId = getSocketIdByUserId(friend.id);
       if (friendSocketId) {
-        io.to(friendSocketId).emit("friendOnline", { friendOnline: socket.user });
+        await socket.user?.populate("profilePicture");
+        io.to(friendSocketId).emit("friendOnline", {
+          friendOnline: socket.user,
+        });
       }
+    });
+
+    // Handle sendMessage event
+    socket.on("sendMessage", async (data) => {
+      await sendMessage(socket, data); 
+    });
+
+    // Handle getConversation event
+    socket.on("getConversation", async (data) => {
+      await getConversation(socket, data);
     });
 
     // Handle disconnection
@@ -31,8 +50,6 @@ export const initializeSocket = (io: Server) => {
 
       // Remove the socket from the centralized store
       removeSocketConnection(socket, onlineFriends);
-
-
     });
   });
 };
