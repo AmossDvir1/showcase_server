@@ -1,3 +1,4 @@
+import { IUser } from "../../../models/User";
 import { getUserFriendsIds } from "../../controllers/relationships/getUserFriendsIds";
 import getUsersByIds from "../../controllers/users/getUsersByIds";
 import socketConnections from "./socketConnections";
@@ -9,6 +10,13 @@ export const getOnlineFriendsSockets = async (userId: string) => {
     (friendId: string) => socketConnections[friendId]
   );
 
-  const onlineFriends = await getUsersByIds(onlineFriendsIds);
+
+  let onlineFriends:any = await getUsersByIds(onlineFriendsIds);
+  onlineFriends = await Promise.all(onlineFriends.map(async (friend:IUser) => {
+    await friend.populate("profilePicture");
+    // const profilePicture = await getPicture(friend, "profile");
+    // return {...friend, profilePicture: profilePicture?.imageStringBase64 || null}
+    return friend
+  }))
   return onlineFriends;
 };

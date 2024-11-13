@@ -1,6 +1,7 @@
 import { Request, Response } from "express";
 import User from "../../../models/User";
 import Picture from "../../../models/Picture";
+import { getPicture } from "./getPicture";
 
 const getProfile = async (req: Request, res: Response) => {
   const data = req?.body;
@@ -27,14 +28,9 @@ const getProfile = async (req: Request, res: Response) => {
         if (!user) {
           return res.status(500).json({ message: "No user found" });
         }
-        const profilePicture = await Picture.findOne({
-          userId: user._id,
-          purpose: "profile",
-        });
-        const coverPhoto = await Picture.findOne({
-          userId: user._id,
-          purpose: "cover",
-        });
+
+        const profilePicture = await getPicture(user, "profile");
+        const coverPhoto = await getPicture(user, "cover");
 
         return res.json({
           firstName: user?.firstName,

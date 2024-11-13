@@ -1,6 +1,6 @@
 import { Socket } from "socket.io";
 import { ExtendedError } from "socket.io/dist/namespace";
-import jwt, { JwtPayload } from "jsonwebtoken";
+import jwt from "jsonwebtoken";
 import { IUser } from "../models/User";
 import UserModel from "../models/User"; // Assuming you have a UserModel to interact with the database
 

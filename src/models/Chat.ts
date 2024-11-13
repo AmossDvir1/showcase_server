@@ -1,47 +1,44 @@
-import User from "./User";
-import { Schema, model, Document } from "mongoose";
-import { v4 as uuidv4 } from "uuid";
-import Message from "./Message";
+import mongoose, { Schema, Document } from "mongoose";
 
 export interface IChat extends Document {
-  chatName: string;
-  users: string[];
-  isGroupChat: boolean;
-  latestMessage?: string;
-  groupAdmin?: string;
+  participants: string[]; // users IDs
+  createdAt: Date;
+  lastMessage: { text: string; createdAt: Date }; // Last message preview
 }
 
-const ChatSchema = new Schema<IChat>(
+const ChatSchema: Schema<IChat> = new Schema(
   {
-    _id: {
-      type: String,
-      default: uuidv4,
+    participants: {
+      type: [String],
+      required: true,
     },
-    chatName: {
-      type: String,
-      default: "",
-      trim: true,
+    createdAt: {
+      type: Date,
+      default: Date.now,
     },
-    users: [
-      {
+    lastMessage: {
+      text: {
         type: String,
-        ref: User,
-        required: true,
+        required: false, // Optional: You can leave this empty if no messages are sent yet
       },
-    ],
-    isGroupChat: { type: Boolean },
-    latestMessage: {
-      type: String,
-      ref: Message,
-    },
-    groupAdmin: {
-      type: String,
-      ref: User,
+      createdAt: {
+        type: Date,
+        required: false, // Optional: If you don't want to set it initially
+      },
     },
   },
-  { timestamps: true }
+  { timestamps: true } // Mongoose will automatically add createdAt and updatedAt fields
 );
 
-const Chat = model<IChat>("Chat", ChatSchema);
+// Middleware to sort participants array before saving
+ChatSchema.pre("save", function (next) {
+    this.participants.sort();
+    next();
+  });
+  
+  // Compound index on participants array to ensure unique pairs
+  ChatSchema.index({ participants: 1 }, { unique: true });
+
+const Chat = mongoose.model<IChat>("Chat", ChatSchema);
 
 export default Chat;

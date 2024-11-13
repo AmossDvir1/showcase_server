@@ -10,8 +10,7 @@ const getUserFriends = async (req: Request, res: Response) => {
     const friends = await User.find({
       _id: { $in: friendsIds },
     });
-    
-
+  
     return res.json({friends});
   } catch (err: any) {
     console.error(err);

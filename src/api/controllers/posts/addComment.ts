@@ -2,7 +2,6 @@ import { Request, Response } from "express";
 import { IUser } from "../../../models/User";
 import Post from "../../../models/Post";
 import { v4 as uuidv4 } from "uuid";
-import { ObjectId } from "mongodb";
 import { mapPostContent, populatePosts } from "../../../utils/utils";
 
 const addComment = async (req: Request, res: Response) => {
