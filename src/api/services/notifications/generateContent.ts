@@ -1,8 +1,8 @@
-import { NotificationType } from "../../../global";
+import { NotificationContent } from "../../../global";
 import User, { IUser } from "../../../models/User";
 
 const generateContent = async (
-  type: NotificationType,
+  type: NotificationContent,
   senderId: string,
   recipientId: string
 ) => {
@@ -10,14 +10,17 @@ const generateContent = async (
   try {
     const sender = await User.findById(senderId);
     switch (type) {
-      case "friend_request":
+      case "friendRequest":
         content = `${sender?.firstName} ${sender?.lastName} sent you a friend request`;
+        break;
+      case "likeComment":
+        content = `${sender?.firstName} ${sender?.lastName} liked your comment`;
+        break;
+      case "likePost":
+        content = `${sender?.firstName} ${sender?.lastName} liked your post`;
         break;
       case "comment":
         content = `${sender?.firstName} ${sender?.lastName} commented on your post`;
-        break;
-      case "like":
-        content = `${sender?.firstName} ${sender?.lastName} liked your post`;
         break;
       default:
         break;

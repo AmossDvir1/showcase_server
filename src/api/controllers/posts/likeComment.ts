@@ -42,8 +42,8 @@ const likeComment = async (req: Request, res: Response) => {
       const notif = await notificationService.createNotification(
         user._id,
         comment.user,
-        "like",
-        await generateContent("like", user._id, comment.user)
+        "likeComment",
+        await generateContent("likeComment", user._id, comment.user)
       );
       if (!notif) {
         console.error(

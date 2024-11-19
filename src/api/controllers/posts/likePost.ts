@@ -32,12 +32,12 @@ const likePost = async (req: Request, res: Response) => {
       const notif = await notificationService.createNotification(
         user._id,
         post.user,
-        "like",
-        await generateContent("like", user._id, post.user)
+        "likePost",
+        await generateContent("likePost", user._id, post.user)
       );
       if (!notif) {
         console.error(
-          `Failed to create a friend request notification from userId ${post.user} to ${user._id}`
+          `Failed to create a likePost notification from userId ${post.user} to ${user._id}`
         );
       }
       broadcast(notif, post.user, "newNotification");

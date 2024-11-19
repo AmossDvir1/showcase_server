@@ -6,6 +6,7 @@ import { profileRoute } from "../api/routes/profiles";
 import { relationshipRoute } from "../api/routes/friends";
 import { postRoute } from "../api/routes/posts";
 import { notificationRoute } from "../api/routes/notifications";
+import { technologiesRoute } from "../api/routes/technologies";
 import { IPost } from "../models/Post";
 import Picture from "../models/Picture";
 
@@ -17,6 +18,7 @@ const useRoutes = (app: express.Express) => {
   app.use("/friends", relationshipRoute);
   app.use("/post", postRoute);
   app.use("/notifications", notificationRoute);
+  app.use("/techs", technologiesRoute);
 };
 
 const populatePosts = async (posts: IPost | IPost[]) => {
@@ -106,4 +108,19 @@ const mapPostContent = async (posts: IPost | IPost[]) => {
     media: uniqueMedia,
   };
 };
-export { useRoutes, populatePosts, mapPostContent };
+
+/**
+ * Generates a random RGB color string with an optional alpha value.
+ * @param {number} [alpha=1] - The alpha value to use for the color. Should be a number between 0 and 1.
+ * @returns {string} A random RGB color string in the format `rgb(r, g, b, a)`.
+ */
+const generateRandomColorString = (alpha: number = 1): string => {
+  const randomBetween = (min: number, max: number) =>
+    min + Math.floor(Math.random() * (max - min + 1));
+  const r = randomBetween(0, 255);
+  const g = randomBetween(0, 255);
+  const b = randomBetween(0, 255);
+  const rgb = `rgb(${r},${g},${b}, ${alpha})`; // Collect all to a css color string
+  return rgb;
+};
+export { useRoutes, populatePosts, mapPostContent, generateRandomColorString };

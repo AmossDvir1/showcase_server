@@ -25,17 +25,18 @@ const sendMessage = async (
           "You are not friends with this user and cannot send a message.",
       });
     }
-    let ids = [senderId, friendId].sort();
     let chat = await Chat.findOne({
-        participants: { $all: ids },
+        participants: { $all: [senderId, friendId] },
     });
 
     // If chat doesn't exist, create one
     if (!chat) {
-      chat = await Chat.create({
-        participants: ids, // Create a new chat with the sender and recipient
-        lastMessage: { content, createdAt: new Date() }, // Set the first message as the last message
+      chat = new Chat({
+        participants: [senderId, friendId],
+        lastMessage: { content: null, createdAt: new Date() }
       });
+      await chat.save();
+
     }
     // Use the newly created chat's ID
     const chatId = chat._id.toString(); // Update chatId to the new chat's ID
@@ -60,6 +61,7 @@ const sendMessage = async (
     // Emit the message to the recipient (friend)
     const friendSocketId = getSocketIdByUserId(friendId);
     if (friendSocketId) {
+      await newMessage.populate("senderId", "username profilePicture");
       socket.to(friendSocketId).emit("newMessage", { newMessage });
     }
 
@@ -98,26 +100,33 @@ const getConversation = async (
     }
 
     // Find the chat between the two users
-    const chat = await Chat.findOne({
+    let chat = await Chat.findOne({
       participants: { $all: [senderId, friendId] },
     });
 
     if (!chat) {
-      return socket.emit("error", {
-        message: "No conversation found between you and your friend!",
+      // If chat doesn't exist, create one
+      chat = new Chat({
+        participants: [senderId, friendId],
+        lastMessage: { content: null, createdAt: new Date() }
       });
+      await chat.save();
+
+      const chatId = chat._id.toString(); // Update chatId to the new chat's ID
+      socket.emit("conversation", { messages: [], chatId });
     }
+
 
     // Fetch the messages for the chat with pagination
     const messages = await Message.find({ chatId: chat._id })
-      .sort({ createdAt: 1 }) // Sort by most recent messages first
+      .sort({ createdAt: -1 }) // Sort by most recent messages first
       .skip(skip) // Skip messages for pagination
       .limit(limit) // Limit number of messages
       .populate("senderId", "username profilePicture") // Populate sender's info for each message
       .exec();
 
     // Emit the conversation (messages) to the client
-    socket.emit("conversation", { messages });
+    socket.emit("conversation", { messages, chatId: chat._id });
   } catch (error) {
     console.error("Error in handleGetConversation handler:", error);
     socket.emit("error", {
