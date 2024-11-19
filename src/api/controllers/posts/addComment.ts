@@ -3,6 +3,9 @@ import { IUser } from "../../../models/User";
 import Post from "../../../models/Post";
 import { v4 as uuidv4 } from "uuid";
 import { mapPostContent, populatePosts } from "../../../utils/utils";
+import notificationService from "../../services/notifications/notificationService";
+import { generateContent } from "../../services/notifications/generateContent";
+import broadcast from "../../services/socket/broadcast";
 
 const addComment = async (req: Request, res: Response) => {
   const user = req?.user as IUser;
@@ -31,12 +34,29 @@ const addComment = async (req: Request, res: Response) => {
 
     // Save the updated post
     await post.save();
+
+    // Add notification to the user who wrote the comment
+    const notif = await notificationService.createNotification(
+      user._id,
+      post?.user,
+      "comment",
+      await generateContent("comment", user._id, post.user)
+    );
+    if (!notif) {
+      console.error(
+        `Failed to create a comment notification from userId ${post.user} to ${user._id}`
+      );
+    }
+    broadcast(notif, post?.user, "newNotification");
+
     await populatePosts(post);
     const mappedPost = await mapPostContent(post);
 
-    return res.status(200).json({ postData: mappedPost.postsData[0], media: mappedPost.media });
+    return res
+      .status(200)
+      .json({ postData: mappedPost.postsData[0], media: mappedPost.media });
   } catch (err: any) {
-    console.error("Error liking/disliking post:", err);
+    console.error("Error while adding comment:", err);
     return res.status(500).json({ message: "Internal Server Error" });
   }
 };

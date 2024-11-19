@@ -1,5 +1,5 @@
 import { Document, Schema, model } from "mongoose";
-import { NotificationState, NotificationType } from "../global";
+import { NotificationState, NotificationContent } from "../global";
 import { v4 as uuidv4 } from "uuid";
 
 // Define an interface for the Notification document
@@ -7,7 +7,7 @@ export interface INotification extends Document {
   sender: string; // Assuming sender is a user ID
   recipient: string; // Assuming recipient is a user ID
   content: string;
-  type: NotificationType; // Add other notification types as needed
+  type: NotificationContent; // Add other notification types as needed
   timestamp: Date;
   _id: string;
   status: NotificationState;
@@ -38,7 +38,7 @@ const notificationSchema = new Schema<INotification>({
   type: {
     type: String,
     required: true,
-    enum: ["friend_request", "post", "like"], // Add other notification types as needed
+    enum: ["friendRequest", "likeComment", "likePost", "comment"], // Add other notification types as needed
   },
   timestamp: {
     type: Date,

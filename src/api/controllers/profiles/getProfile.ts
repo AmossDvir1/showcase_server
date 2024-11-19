@@ -1,6 +1,5 @@
 import { Request, Response } from "express";
 import User from "../../../models/User";
-import Picture from "../../../models/Picture";
 import { getPicture } from "./getPicture";
 
 const getProfile = async (req: Request, res: Response) => {

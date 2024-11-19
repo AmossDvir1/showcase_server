@@ -1,4 +1,4 @@
-import { NotificationType } from "../../../global";
+import { NotificationContent } from "../../../global";
 import Notification, { INotification } from "../../../models/Notification";
 import User from "../../../models/User";
 
@@ -7,19 +7,19 @@ class NotificationService {
   async createNotification(
     senderId: string,
     recipientId: string,
-    type: NotificationType,
+    type: NotificationContent,
     content?: string
   ): Promise<boolean | INotification> {
     let extraData = "";
     const sender = await User.findById(senderId);
     switch (type) {
-      case "friend_request":
+      case "friendRequest":
         if (!sender) {
           return false;
         }
         extraData = sender.urlMapping.toString();
         break;
-      case "like":
+      case "likePost":
         break;
         
     }
@@ -29,7 +29,7 @@ class NotificationService {
       recipient: recipientId,
       content: content ?? "",
       type,
-      extraData: extraData,
+      extraData,
     });
 
     const savedNotification = await notification.save();

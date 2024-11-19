@@ -41,8 +41,8 @@ const createRelationship = async (req: Request, res: Response) => {
     const notif = await notificationService.createNotification(
       userAId,
       userB._id,
-      "friend_request",
-      await generateContent("friend_request", userAId, userB._id)
+      "friendRequest",
+      await generateContent("friendRequest", userAId, userB._id)
     );
     if (!notif) {
       console.error(
