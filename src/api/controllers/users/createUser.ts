@@ -1,6 +1,5 @@
 import { Request, Response } from "express";
 import User from "../../../models/User";
-import { IUser } from "../../../models/User";
 import {
   generateAccessToken,
   generateRefreshToken,
@@ -8,8 +7,8 @@ import {
 } from "../../utils/authUtils";
 import { allDetailsProvided } from "../../utils/helpers";
 import { findUserByEmail, findUserByUsername } from "../../services/findUser";
-import Session from "../../../models/Session";
 import { createUserSession } from "../../utils/createUserSession";
+import { createDefaultSettings } from "../userSettings/createDefaultSettings";
 
 const createUser = async (req: Request, res: Response) => {
   const data = req?.body;
@@ -69,7 +68,7 @@ const registerUser = async (userData: any, res: Response) => {
   });
   try {
     const registeredUser = await User.register(user, userData.password);
-
+    await createDefaultSettings(registeredUser?.id);
     const accessToken = generateAccessToken(registeredUser._id);
     const refreshToken = generateRefreshToken(registeredUser._id);
     if (refreshToken === null || accessToken === null) {

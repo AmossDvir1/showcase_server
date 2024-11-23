@@ -1,6 +1,7 @@
 import { Request, Response } from "express";
 import User from "../../../models/User";
 import { getPicture } from "./getPicture";
+import UserSettings, { IProfile } from "../../../models/UserSettings";
 
 const getProfile = async (req: Request, res: Response) => {
   const data = req?.body;
@@ -28,8 +29,14 @@ const getProfile = async (req: Request, res: Response) => {
           return res.status(500).json({ message: "No user found" });
         }
 
+        // Fetch user's settings and populate technologies
+        const userSettings = await UserSettings.findOne({
+          userId: user._id,
+        }).populate("profile.technologies");
+
         const profilePicture = await getPicture(user, "profile");
         const coverPhoto = await getPicture(user, "cover");
+
 
         return res.json({
           firstName: user?.firstName,
@@ -39,6 +46,7 @@ const getProfile = async (req: Request, res: Response) => {
           urlMapping: user?.urlMapping,
           profilePicture: profilePicture?.imageStringBase64 || null,
           coverPhoto: coverPhoto?.imageStringBase64 || null,
+          profile: userSettings?.profile,
         });
       case "project":
         console.log("this is a project");

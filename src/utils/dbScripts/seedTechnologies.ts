@@ -1,7 +1,26 @@
+// Use this command in the terminal to update the TechnologiesInventory collection: 
+// npx ts-node ./src/utils/dbScripts/seedTechnologies.ts
+
 import mongoose from "mongoose";
 import TechnologiesInventory from "../../models/TechnologiesInventory";
 import dotenv from "dotenv";
 dotenv.config();
+
+const removeDuplicatesByProperty = <T, K extends keyof T>(
+  array: T[],
+  property: K
+): T[] => {
+  const seenValues = new Set<T[K]>();
+  return array.filter(item => {
+    const value = item[property];
+    if (seenValues.has(value)) {
+      return false;
+    }
+    seenValues.add(value);
+    return true;
+  });
+};
+
 
 /**
  * Manually define the color for each technology.
@@ -188,12 +207,6 @@ const technologies = [
     color: "#00B4AB", // Teal (Dart logo color)
   },
   {
-    label: "Go",
-    category: "Programming Language",
-    icon: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/go/go-original.svg",
-    color: "#00ADD8", // Cyan (Go logo color)
-  },
-  {
     label: "GraphQL",
     category: "Query Language",
     icon: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/graphql/graphql-plain.svg",
@@ -314,12 +327,6 @@ const technologies = [
     color: "#003B57", // Blue (SQLite logo color)
   },
   {
-    label: "MariaDB",
-    category: "Database",
-    icon: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/mariadb/mariadb-original.svg",
-    color: "#003B57", // Blue (MariaDB logo color)
-  },
-  {
     label: "Elasticsearch",
     category: "Search Engine",
     icon: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/elasticsearch/elasticsearch-original.svg",
@@ -417,6 +424,18 @@ const technologies = [
     color: "#2496ED", // Blue (Docker Compose logo color)
   },
   {
+    label: "Go",
+    category: "Programming Language",
+    icon: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/go/go-original.svg",
+    color: "#00ADD8", // Cyan (Go logo color)
+  },
+  {
+    label: "Vagrant",
+    category: "DevOps Tool",
+    icon: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/vagrant/vagrant-original.svg",
+    color: "#FDC732", // Yellow (Vagrant logo color)
+  },
+  {
     label: "Vagrant",
     category: "DevOps Tool",
     icon: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/vagrant/vagrant-original.svg",
@@ -431,6 +450,10 @@ const technologies = [
 ];
 
 const seedTechnologies = async () => {
+  const filteredTechnologies = removeDuplicatesByProperty(technologies, "label");
+  const diff = technologies.length - filteredTechnologies.length;
+  console.log(`You had ${diff} duplicate${diff>1?'s':''}... Inventory size is now ${filteredTechnologies.length}`)
+
   try {
     if (!process.env.DB_CONNECTION) {
       console.log("No connection string! exiting...");
@@ -447,7 +470,7 @@ const seedTechnologies = async () => {
     await TechnologiesInventory.collection.dropIndexes();
     console.log("Dropped indexes successfully");
 
-    await TechnologiesInventory.insertMany(technologies);
+    await TechnologiesInventory.insertMany(filteredTechnologies);
     console.log("Technologies seeded successfully!");
     process.exit();
   } catch (err) {

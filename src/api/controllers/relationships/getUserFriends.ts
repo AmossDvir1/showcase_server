@@ -9,7 +9,9 @@ const getUserFriends = async (req: Request, res: Response) => {
     const friendsIds = await getUserFriendsIds(userId ?? me._id);
     const friends = await User.find({
       _id: { $in: friendsIds },
-    });
+    })
+    .select("username firstName lastName email urlMapping profilePicture") // Include only required fields
+    .populate("profilePicture").exec();
   
     return res.json({friends});
   } catch (err: any) {
