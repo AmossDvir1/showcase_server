@@ -6,9 +6,10 @@ import { profileRoute } from "../api/routes/profiles";
 import { relationshipRoute } from "../api/routes/friends";
 import { postRoute } from "../api/routes/posts";
 import { notificationRoute } from "../api/routes/notifications";
-import { technologiesRoute } from "../api/routes/technologies";
+import { userSettingsRoute } from "../api/routes/userSettings";
 import { IPost } from "../models/Post";
 import Picture from "../models/Picture";
+import { technologiesRoute } from "../api/routes/technologies";
 
 const useRoutes = (app: express.Express) => {
   app.use("/user", userRoute);
@@ -18,7 +19,8 @@ const useRoutes = (app: express.Express) => {
   app.use("/friends", relationshipRoute);
   app.use("/post", postRoute);
   app.use("/notifications", notificationRoute);
-  app.use("/techs", technologiesRoute);
+  app.use("/settings", userSettingsRoute);
+  app.use("/technologies", technologiesRoute);
 };
 
 const populatePosts = async (posts: IPost | IPost[]) => {
@@ -123,4 +125,20 @@ const generateRandomColorString = (alpha: number = 1): string => {
   const rgb = `rgb(${r},${g},${b}, ${alpha})`; // Collect all to a css color string
   return rgb;
 };
-export { useRoutes, populatePosts, mapPostContent, generateRandomColorString };
+
+const removeDuplicatesByProperty = <T, K extends keyof T>(
+  array: T[],
+  property: K
+): T[] => {
+  const seenValues = new Set<T[K]>();
+  return array.filter(item => {
+    const value = item[property];
+    if (seenValues.has(value)) {
+      return false;
+    }
+    seenValues.add(value);
+    return true;
+  });
+};
+
+export { useRoutes, populatePosts, mapPostContent, generateRandomColorString, removeDuplicatesByProperty };
