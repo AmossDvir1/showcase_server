@@ -6,13 +6,11 @@ import bodyParser from "body-parser";
 import dotenv from "dotenv";
 import { connectToDB } from "./utils/DBConnection";
 import { useRoutes } from "./utils/utils";
-import {Socket, Server} from "socket.io"
+import { Server } from "socket.io";
 import { createServer } from "http";
 require("./middlewares/authStrategies/localStrategy");
 require("./middlewares/authStrategies/jwtStrategy");
-import websocketAuth from "./middlewares/websocketAuth"
-import { addSocketConnection, getSocketByUserId, removeSocketConnection } from "./api/services/socket/socketConnections";
-import { getOnlineFriendsSockets } from "./api/services/socket/retrieveOnlineFriends";
+
 import { initializeSocket } from "./api/services/socket/socketHandler";
 
 dotenv.config();
@@ -51,19 +49,21 @@ app.use(passport.initialize());
 console.log(`Running on ${process.env.NODE_ENV ?? "development"} environment`);
 app.use(bodyParser.urlencoded({ limit: "50mb", extended: true }));
 
-// Websocket connection: 
+// Websocket connection:
 console.log("Initializing Websocket...");
 const httpServer = createServer(app);
 export const io = new Server(httpServer, {
   cors: {
-    origin: '*',
+    origin: "*",
     methods: ["GET", "POST"],
-    credentials: true
-  }
+    credentials: true,
+  },
 });
 
 initializeSocket(io);
 
 useRoutes(app);
-httpServer.listen(port, () => console.log(`Server is Running on Port ${port}...`));
+httpServer.listen(port, () =>
+  console.log(`Server is Running on Port ${port}...`)
+);
 export { db };

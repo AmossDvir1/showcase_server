@@ -1,7 +1,7 @@
 import { Request, Response, NextFunction } from "express";
 import { IUser } from "../../../models/User";
 import { findUserByUsername } from "../../services/findUser";
-require("dotenv").config();
+import dotenv from "dotenv";
 import {
   generateAccessToken,
   generateRefreshToken,
@@ -9,9 +9,12 @@ import {
 } from "../../utils/authUtils";
 import Session from "../../../models/Session";
 
+dotenv.config();
+
+
 const loginUser = async (req: Request, res: Response, next: NextFunction) => {
   const data = { username: req?.body?.username, password: req?.body?.password };
-  // console.log(data);
+
   if (!data || data == undefined) {
     console.error("No data supplied with the login request");
     return res
@@ -29,7 +32,6 @@ const loginUser = async (req: Request, res: Response, next: NextFunction) => {
   } else {
     try {
       const user = await findUserByUsername(data.username);
-      // console.log(user);
       if (!user) {
         res.status(401).json({ message: "No user found" });
       } else {

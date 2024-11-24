@@ -26,22 +26,24 @@ const getSearchSuggestions = async (req: Request, res: Response) => {
         title: item.document.get("title"),
         content: item.document.get("description"),
         type: "project",
+        icon: null
       };
     });
 
-    const rankedUsersItems = rankedUsersDocs.map((item) => {
+    const rankedUsersItems = Promise.all(rankedUsersDocs.map(async (item) => {
       return {
         ...item,
         title: item.document.get("firstName"),
         content: item.document.get("lastName"),
         type: "profile",
+        icon: await item.document.populate("profilePicture")
       };
-    });
+    }));
 
 
     const filteredRankedDocs = [
       ...rankedProjectsItems,
-      ...rankedUsersItems,
+      ...await rankedUsersItems,
     ].filter((doc) => doc.relevance && doc.relevance > RELEVANCE_THRESHOLD);
     const sortedFilteredRankedDocs = filteredRankedDocs.sort((a, b) => {
       if (a.relevance !== undefined && b.relevance !== undefined) {
@@ -55,6 +57,7 @@ const getSearchSuggestions = async (req: Request, res: Response) => {
         title: result.title,
         content: result.content,
         type: result.type,
+        ...(result?.icon && {icon: result.document.get("profilePicture")}),
         ...(result.document.get("urlMapping") && {urlMapping: result.document.get("urlMapping")})
       };
     });

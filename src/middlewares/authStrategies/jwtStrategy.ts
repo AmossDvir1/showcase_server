@@ -17,7 +17,7 @@ passport.use(
     // This can be avoided if you don't want to fetch user details in each request.
     User.findOne({ userId: jwt_payload._id }, function (err:any, user:IUser) {
       if (err) {
-        console.log(err);
+        console.log("Error in jwt_payload: ", err);
         return done(err, false);
       }
       if (user) {

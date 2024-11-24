@@ -87,7 +87,7 @@ const registerUser = async (userData: any, res: Response) => {
     res.cookie("refreshToken", newSessionData.token, COOKIE_OPTIONS);
     return res.status(201).json({ success: true, accessToken });
   } catch (err: any) {
-    console.log(err);
+    console.log("Error during registering new user: ", err);
     return res.status(401).json({
       message: "Email is already taken. Please try again",
       error: "emailAlreadyExists",

@@ -17,12 +17,14 @@ export const COOKIE_OPTIONS: CookieOptions = {
   secure: true,
   signed: true,
   maxAge:
-    eval(process.env.REFRESH_TOKEN_EXPIRY ?? (60 * 60 * 24).toString()) * 1000,
+    eval(process.env.REFRESH_TOKEN_EXPIRY ?? (10).toString()) * 1000,
   sameSite: "none",
 };
 
 
 export const generateAccessToken = (userId: string): string | null => {
+
+
   if (!process.env.JWT_SECRET || !process.env.ACCESS_TOKEN_EXPIRY) {
     return null;
   }
@@ -59,6 +61,7 @@ export const checkAuthentication = async (
   res: Response,
   next: NextFunction
 ) => {
+  dotenv.config();
   // Retrieve the authorization header
   const authHeader = req.headers.authorization;
 
@@ -93,7 +96,7 @@ export const checkAuthentication = async (
       // Call next() to proceed to the next middleware or route handler
       return next();
     } catch (err) {
-      console.error(err);
+      console.error("Error in checkAuthentication", err);
       return res.status(401).json({
         message: "You've entered a wrong Username/Password",
         error: "invalidPasswordOrUsername",

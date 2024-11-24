@@ -12,7 +12,7 @@ const getFriendsPosts = async (userId: string) => {
     }
     return await populatePosts(posts);
   } catch (err: any) {
-    console.log(err);
+    console.log("Error during fetching friends posts: ", err);
     return [];
   }
 };
