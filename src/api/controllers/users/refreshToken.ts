@@ -6,12 +6,14 @@ import {
 } from "../../utils/authUtils";
 import { Request, Response } from "express";
 import Session from "../../../models/Session";
-require("dotenv").config();
+import dotenv from "dotenv";
+
+dotenv.config();
 
 export const refreshToken = async (req: Request, res: Response) => {
   // Take the refreshToken out of the cookie:
   const cookies = req.signedCookies;
-  console.log(cookies)
+  console.log("cookies sent: ", cookies)
   const refreshToken = cookies?.refreshToken?.toString();
 
   if (!refreshToken) {
@@ -58,7 +60,7 @@ export const refreshToken = async (req: Request, res: Response) => {
 
     return res.status(200).json({ success: true, accessToken: newAccessToken });
   } catch (err: any) {
-    console.log(err);
+    console.log("Error in refreshToken endpoint: ", err);
     res.status(401).json({ message: "", error: "" });
   }
 };

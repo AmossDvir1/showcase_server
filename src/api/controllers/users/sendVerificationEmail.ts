@@ -1,5 +1,5 @@
 import { Request, Response, NextFunction } from "express";
-require("dotenv").config();
+import dotenv from "dotenv";
 import nodemailer from "nodemailer";
 import {
   emailSubject,
@@ -9,10 +9,11 @@ import { IUser } from "../../../models/User";
 import { generateHashedOtp } from "../../utils/authUtils";
 import { saveUserOtp } from "../../services/saveUserOtp";
 
+dotenv.config();
+
 const sendVerificationEmail = async (req: Request, res: Response) => {
   const user = req.user as IUser;
   if (!user || !user.email) {
-    console.log(user)
     console.error("User not exists");
     return res
       .status(401)

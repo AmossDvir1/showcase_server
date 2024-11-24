@@ -22,7 +22,7 @@ const logoutUser = async (req: Request, res: Response) => {
 
     return res.json({ message: "user is logged out" });
   } catch (err: any) {
-    console.log(err);
+    console.log("Error during logging out: ", err);
   }
 };
 

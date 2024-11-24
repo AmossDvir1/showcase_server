@@ -35,7 +35,7 @@ const websocketAuth = async (socket: AuthenticatedSocket, next: (err?: ExtendedE
     socket.user = user;
     next();
   } catch (error) {
-    console.log(error)
+    console.log("Authentication error", error)
     next(new Error("Authentication error"));
   }
 };

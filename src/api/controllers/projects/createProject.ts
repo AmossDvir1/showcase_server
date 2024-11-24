@@ -7,8 +7,6 @@ const createProject = async (req: Request, res: Response) => {
   const user = req.user as IUser;
 
   try {
-    console.log(data);
-
     const createdProject = await create(
       data.projectName,
       data.projectDesc,

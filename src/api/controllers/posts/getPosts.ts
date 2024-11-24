@@ -37,7 +37,7 @@ const getMyPosts = async (req: Request, res: Response) => {
     mappedPosts = {...mappedPosts, postsData: postsData}
     return res.status(200).json({ posts: mappedPosts });
   } catch (err: any) {
-    console.error(err);
+    console.error("Error in retreiving posts: ", err);
     res.status(500).json({ message: "Failed to retrieve posts" });
   }
 };
