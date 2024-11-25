@@ -10,6 +10,7 @@ import { userSettingsRoute } from "../api/routes/userSettings";
 import { IPost } from "../models/Post";
 import Picture from "../models/Picture";
 import { technologiesRoute } from "../api/routes/technologies";
+import { sessionsRoute } from "../api/routes/sessions";
 
 const useRoutes = (app: express.Express) => {
   app.use("/user", userRoute);
@@ -21,6 +22,7 @@ const useRoutes = (app: express.Express) => {
   app.use("/notifications", notificationRoute);
   app.use("/settings", userSettingsRoute);
   app.use("/technologies", technologiesRoute);
+  app.use("/sessions", sessionsRoute);
 };
 
 const populatePosts = async (posts: IPost | IPost[]) => {

@@ -5,7 +5,7 @@ import { v4 as uuidv4 } from "uuid";
 import { mapPostContent, populatePosts } from "../../../utils/utils";
 import notificationService from "../../services/notifications/notificationService";
 import { generateContent } from "../../services/notifications/generateContent";
-import broadcast from "../../services/socket/broadcast";
+import { broadcastToUser } from "../../services/socket/broadcast";
 
 const addComment = async (req: Request, res: Response) => {
   const user = req?.user as IUser;
@@ -47,7 +47,7 @@ const addComment = async (req: Request, res: Response) => {
         `Failed to create a comment notification from userId ${post.user} to ${user._id}`
       );
     }
-    broadcast(notif, post?.user, "newNotification");
+    broadcastToUser(notif, post?.user, "newNotification");
 
     await populatePosts(post);
     const mappedPost = await mapPostContent(post);

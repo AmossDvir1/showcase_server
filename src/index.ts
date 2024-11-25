@@ -34,6 +34,7 @@ app.use(
       "http://192.168.1.156:3000",
       "https://showcase-world.vercel.app"
     ],
+    allowedHeaders: ['Content-Type', 'Authorization', 'X-Session-ID'], // Allow X-Session-ID header
     credentials: true,
   })
 );

@@ -8,28 +8,25 @@ import crypto from "crypto";
 import { findUserById } from "../services/findUser";
 import { IUser } from "../../models/User";
 import bcrypt from "bcrypt";
-
-
+import geoip from "geoip-lite";
 dotenv.config();
 
 export const COOKIE_OPTIONS: CookieOptions = {
   httpOnly: true,
   secure: true,
   signed: true,
-  maxAge:
-    eval(process.env.REFRESH_TOKEN_EXPIRY ?? (10).toString()) * 1000,
+  maxAge: eval(process.env.REFRESH_TOKEN_EXPIRY ?? (10).toString()) * 1000,
   sameSite: "none",
 };
 
-
 export const generateAccessToken = (userId: string): string | null => {
-
-
   if (!process.env.JWT_SECRET || !process.env.ACCESS_TOKEN_EXPIRY) {
     return null;
   }
   return jwt.sign({ id: userId }, process.env.JWT_SECRET as string, {
-    expiresIn: eval(process.env.ACCESS_TOKEN_EXPIRY ?? (60 * 15).toString()),
+    expiresIn: eval(
+      process.env.ACCESS_TOKEN_EXPIRY ?? (60 * 60 * 24).toString()
+    ),
   });
 };
 
@@ -47,10 +44,8 @@ export const generateRefreshToken = (userId: string): ISession | null => {
     }
   );
   return new Session({
-    userId: userId.toString(),
+    userId,
     token: refreshToken,
-    // createdAt: new Date(),
-    // updatedAt: new Date(),
   });
 };
 
@@ -64,6 +59,7 @@ export const checkAuthentication = async (
   dotenv.config();
   // Retrieve the authorization header
   const authHeader = req.headers.authorization;
+  const sessionId = req.headers["x-session-id"] as string; // Extract sessionId from the header
 
   // Check if the authorization header is present
   if (authHeader) {
@@ -81,16 +77,23 @@ export const checkAuthentication = async (
           .json({ message: "Invalid token sent", error: "InvalidTokenSent" });
       }
       const userId = (decoded as JwtPayload).id;
-      const session = await Session.findOne({ userId });
+      const session = await Session.findOne({ userId, _id: sessionId });
       if (!session) {
         return res
           .status(401)
           .json({ message: "Session not found", error: "InvalidSession" });
       }
+
+      // Validate the sessionId
+      if (sessionId !== session._id.toString()) {
+        return res
+          .status(401)
+          .json({ message: "Invalid sessionId", error: "InvalidSessionId" });
+      }
+
       // Set the decoded token on the request object for further use
-
       const userDetails = (await findUserById(userId)) as IUser;
-
+      req.sessionId = sessionId;
       req.user = userDetails;
 
       // Call next() to proceed to the next middleware or route handler
@@ -157,6 +160,28 @@ export const generateHashedOtp = async (length: number) => {
   const hashedOtp = await bcrypt.hash(otp, saltRounds);
 
   return { otp, hashedOtp };
+};
+
+export const createSession = (
+  userId: string,
+  token: string,
+  req: Request
+): ISession => {
+  const ip = (req.ip || req.socket.remoteAddress) ?? "";
+  const geo = geoip.lookup(ip);
+  const device = {
+    osName: req?.body?.osName || "",
+    browserName: req?.body?.browserName || "",
+  };
+  
+  // Save a new session
+  const newSession = new Session({
+    userId,
+    token,
+    device,
+    location: geo ? `${geo.city}, ${geo.country}` : "Unknown Location",
+  });
+  return newSession;
 };
 
 module.exports.verifyUser = passport.authenticate("jwt", { session: false });

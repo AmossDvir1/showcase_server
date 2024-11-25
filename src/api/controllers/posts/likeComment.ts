@@ -4,7 +4,7 @@ import Post from "../../../models/Post";
 import notificationService from "../../services/notifications/notificationService";
 import { generateContent } from "../../services/notifications/generateContent";
 import { mapPostContent, populatePosts } from "../../../utils/utils";
-import broadcast from "../../services/socket/broadcast";
+import { broadcastToUser } from "../../services/socket/broadcast";
 
 const likeComment = async (req: Request, res: Response) => {
   const user = req?.user as IUser;
@@ -50,7 +50,7 @@ const likeComment = async (req: Request, res: Response) => {
           `Failed to create a like notification from userId ${comment.user} to ${user._id}`
         );
       }
-      broadcast(notif, comment?.user, "newNotification");
+      broadcastToUser(notif, comment?.user, "newNotification");
     }
 
     // Save the updated post
