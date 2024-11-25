@@ -2,12 +2,12 @@ import { Server, Socket } from "socket.io";
 import websocketAuth from "../../../middlewares/websocketAuth";
 import {
   addSocketConnection,
-  getSocketIdByUserId,
   removeSocketConnection,
 } from "./socketConnections";
 import { getOnlineFriendsSockets } from "./retrieveOnlineFriends";
 import { IUser } from "../../../models/User";
 import { sendMessage, getConversation } from "./chatEventHandler";
+import { broadcastToUser } from "./broadcast";
 
 export const initializeSocket = (io: Server) => {
   io.use(websocketAuth);
@@ -16,7 +16,7 @@ export const initializeSocket = (io: Server) => {
     console.log("A user connected", socket.user?.username);
 
     // Add the socket to the centralized connection store
-    addSocketConnection(socket.user?.id, socket.id);
+    addSocketConnection(socket.user?.id, socket.id, socket.sessionId ?? "");
     socket.emit("connectionConfirmed", { message: "Connection established!" });
 
     // Fetch and emit online friends to the user
@@ -25,18 +25,16 @@ export const initializeSocket = (io: Server) => {
 
     // Notify the user's friends that they are online
     onlineFriends.forEach(async (friend: IUser) => {
-      const friendSocketId = getSocketIdByUserId(friend.id);
-      if (friendSocketId) {
-        await socket.user?.populate("profilePicture");
-        io.to(friendSocketId).emit("friendOnline", {
-          friendOnline: socket.user,
-        });
-      }
+      await socket.user?.populate("profilePicture");
+      const dataToBroadcast = {
+        friendOnline: socket.user,
+      };
+      broadcastToUser(dataToBroadcast, friend.id, "friendOnline");
     });
 
     // Handle sendMessage event
     socket.on("sendMessage", async (data) => {
-      await sendMessage(socket, data); 
+      await sendMessage(socket, data);
     });
 
     // Handle getConversation event

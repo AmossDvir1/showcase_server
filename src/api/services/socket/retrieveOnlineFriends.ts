@@ -10,13 +10,12 @@ export const getOnlineFriendsSockets = async (userId: string) => {
     (friendId: string) => socketConnections[friendId]
   );
 
-
-  let onlineFriends:any = await getUsersByIds(onlineFriendsIds);
-  onlineFriends = await Promise.all(onlineFriends.map(async (friend:IUser) => {
-    await friend.populate("profilePicture");
-    // const profilePicture = await getPicture(friend, "profile");
-    // return {...friend, profilePicture: profilePicture?.imageStringBase64 || null}
-    return friend
-  }))
+  let onlineFriends: any = await getUsersByIds(onlineFriendsIds);
+  onlineFriends = await Promise.all(
+    onlineFriends.map(async (friend: IUser) => {
+      await friend.populate("profilePicture");
+      return friend;
+    })
+  );
   return onlineFriends;
 };

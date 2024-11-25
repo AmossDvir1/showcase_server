@@ -34,6 +34,7 @@ app.use(
       "http://192.168.1.156:3000",
       "http://192.168.1.167:3000",
     ],
+    allowedHeaders: ['Content-Type', 'Authorization', 'X-Session-ID'], // Allow X-Session-ID header
     credentials: true,
   })
 );

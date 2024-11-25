@@ -4,94 +4,99 @@ import {
   generateAccessToken,
   generateRefreshToken,
   COOKIE_OPTIONS,
+  createSession,
 } from "../../utils/authUtils";
 import { allDetailsProvided } from "../../utils/helpers";
 import { findUserByEmail, findUserByUsername } from "../../services/findUser";
-import { createUserSession } from "../../utils/createUserSession";
 import { createDefaultSettings } from "../userSettings/createDefaultSettings";
 
 const createUser = async (req: Request, res: Response) => {
-  const data = req?.body;
-  if (!data) {
-    return res.status(400).json({ message: "" });
+  const userData = req?.body;
+  if (!userData) {
+    return res.status(400).json({ message: "Invalid request" });
   }
   //   Check for fulfilling all parameters:
-  if (!allDetailsProvided(data)) {
+  if (!allDetailsProvided(userData)) {
     return res
       .status(400)
       .json({ message: "Please fill all the required fields" });
-  } else {
-    await registerUser(data, res);
-  }
-};
-
-const registerUser = async (userData: any, res: Response) => {
-  // Check if user is already exists:
-  if (await findUserByUsername(userData.username)) {
-    return res.status(400).json({
-      message: "Username is already taken. Please choose a different username.",
-      error: "userNameAlreadyExists",
-    });
-  }
-  if (await findUserByEmail(userData.email)) {
-    return res.status(400).json({
-      message: "Email is already taken. Please try again.",
-      error: "emailAlreadyExists",
-    });
   }
 
-  console.log(`Registering ${userData.username} ...`);
-
-  const existingUsersCount = await User.countDocuments({
-    firstName: userData.firstName,
-    lastName: userData.lastName,
-  });
-
-  const lowercaseFirstName = userData.firstName
-    .replace(/[^a-zA-Z]/g, "")
-    .toLowerCase();
-  const lowercaseLastName = userData.lastName
-    .replace(/[^a-zA-Z]/g, "")
-    .toLowerCase();
-
-  const urlMapping = `${lowercaseFirstName}.${lowercaseLastName}${
-    existingUsersCount && "." + existingUsersCount
-  }`;
-
-  User.updateMany();
-  const user = new User({
-    email: userData.email,
-    username: userData.username,
-    firstName: userData.firstName,
-    lastName: userData.lastName,
-    urlMapping,
-  });
-  try {
-    const registeredUser = await User.register(user, userData.password);
-    await createDefaultSettings(registeredUser?.id);
-    const accessToken = generateAccessToken(registeredUser._id);
-    const refreshToken = generateRefreshToken(registeredUser._id);
-    if (refreshToken === null || accessToken === null) {
-      return res
-        .status(500)
-        .json({ message: "Secret/public key is missing", error: "" });
+  // Register the user:
+  else {
+    // Check if user is already exists:
+    if (await findUserByUsername(userData.username)) {
+      return res.status(400).json({
+        message:
+          "Username is already taken. Please choose a different username.",
+        error: "userNameAlreadyExists",
+      });
     }
-    const newSessionData = refreshToken.toObject();
-    let savedUser = await registeredUser.save();
-    console.log(
-      "User created successfully! \n info: " + JSON.stringify(userData)
-    );
-    createUserSession(user, refreshToken);
+    if (await findUserByEmail(userData.email)) {
+      return res.status(400).json({
+        message: "Email is already taken. Please try again.",
+        error: "emailAlreadyExists",
+      });
+    }
 
-    savedUser = savedUser.toObject();
-    res.cookie("refreshToken", newSessionData.token, COOKIE_OPTIONS);
-    return res.status(201).json({ success: true, accessToken });
-  } catch (err: any) {
-    console.log("Error during registering new user: ", err);
-    return res.status(401).json({
-      message: "Email is already taken. Please try again",
-      error: "emailAlreadyExists",
+    console.log(`Registering ${userData.username} ...`);
+
+    const existingUsersCount = await User.countDocuments({
+      firstName: userData.firstName,
+      lastName: userData.lastName,
     });
+
+    const lowercaseFirstName = userData.firstName
+      .replace(/[^a-zA-Z]/g, "")
+      .toLowerCase();
+    const lowercaseLastName = userData.lastName
+      .replace(/[^a-zA-Z]/g, "")
+      .toLowerCase();
+
+    const urlMapping = `${lowercaseFirstName}.${lowercaseLastName}${
+      existingUsersCount && "." + existingUsersCount
+    }`;
+
+    User.updateMany();
+    const user = new User({
+      email: userData.email,
+      username: userData.username,
+      firstName: userData.firstName,
+      lastName: userData.lastName,
+      urlMapping,
+    });
+    try {
+      const registeredUser = await User.register(user, userData.password);
+      await createDefaultSettings(registeredUser?.id);
+      const accessToken = generateAccessToken(registeredUser._id);
+      const refreshToken = generateRefreshToken(registeredUser._id);
+      if (refreshToken === null || accessToken === null) {
+        return res
+          .status(500)
+          .json({ message: "Secret/public key is missing", error: "" });
+      }
+      const newSessionData = refreshToken.toObject();
+      let savedUser = await registeredUser.save();
+      console.log(
+        "User created successfully! \n info: " + JSON.stringify(userData)
+      );
+
+      // Save a new session
+      const newSession = createSession(user._id, refreshToken.token, req);
+      await newSession.save();
+
+      savedUser = savedUser.toObject();
+      res.cookie("refreshToken", newSessionData.token, COOKIE_OPTIONS);
+      return res
+        .status(201)
+        .json({ success: true, accessToken, sessionId: newSession._id });
+    } catch (err: any) {
+      console.log("Error during registering new user: ", err);
+      return res.status(401).json({
+        message: "Email is already taken. Please try again",
+        error: "emailAlreadyExists",
+      });
+    }
   }
 };
 

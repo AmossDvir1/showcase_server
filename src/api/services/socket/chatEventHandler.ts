@@ -1,8 +1,9 @@
 import { Socket } from "socket.io";
 import Message from "../../../models/Message"; // Import Message model
 import Chat from "../../../models/Chat"; // Import Chat model
-import { getSocketIdByUserId } from "./socketConnections"; // Helper to get socket ID
 import { areUsersFriends } from "../../controllers/relationships/utils";
+import { broadcastToSession, broadcastToUser } from "./broadcast";
+import { getAllSocketsByUserId } from "./socketConnections";
 
 const sendMessage = async (
   socket: Socket,
@@ -26,20 +27,19 @@ const sendMessage = async (
       });
     }
     let chat = await Chat.findOne({
-        participants: { $all: [senderId, friendId] },
+      participants: { $all: [senderId, friendId] },
     });
 
     // If chat doesn't exist, create one
     if (!chat) {
       chat = new Chat({
         participants: [senderId, friendId],
-        lastMessage: { content: null, createdAt: new Date() }
+        lastMessage: { content: null, createdAt: new Date() },
       });
       await chat.save();
-
     }
     // Use the newly created chat's ID
-    const chatId = chat._id.toString(); // Update chatId to the new chat's ID
+    const chatId = chat._id; // Update chatId to the new chat's ID
 
     // Save the message in the database
     const newMessage = await Message.create({
@@ -59,14 +59,25 @@ const sendMessage = async (
     );
 
     // Emit the message to the recipient (friend)
-    const friendSocketId = getSocketIdByUserId(friendId);
-    if (friendSocketId) {
-      await newMessage.populate("senderId", "username profilePicture");
-      socket.to(friendSocketId).emit("newMessage", { newMessage });
+    await newMessage.populate("senderId", "username profilePicture");
+    const dataToBroadcast = { newMessage };
+    // Broadcast to user's all other active devices:
+    const otherUserSockets = getAllSocketsByUserId(senderId)?.filter(
+      (soc) => soc?.sessionId !== socket.sessionId
+    );
+    if (otherUserSockets && otherUserSockets.length > 0) {
+      otherUserSockets.forEach((soc) => {
+        if (soc?.sessionId) {
+          broadcastToSession(
+            dataToBroadcast,
+            senderId,
+            soc?.sessionId,
+            "newMessage"
+          );
+        }
+      });
     }
-
-    // // Optionally, emit the message to the sender as well (e.g., for the sender's chat history)
-    // socket.emit("newMessage", { newMessage });
+    broadcastToUser(dataToBroadcast, friendId, "newMessage");
 
     console.log(`Message sent to chat ${chatId} by user ${senderId}`);
   } catch (error) {
@@ -108,14 +119,13 @@ const getConversation = async (
       // If chat doesn't exist, create one
       chat = new Chat({
         participants: [senderId, friendId],
-        lastMessage: { content: null, createdAt: new Date() }
+        lastMessage: { content: null, createdAt: new Date() },
       });
       await chat.save();
 
-      const chatId = chat._id.toString(); // Update chatId to the new chat's ID
+      const chatId = chat._id; // Update chatId to the new chat's ID
       socket.emit("conversation", { messages: [], chatId });
     }
-
 
     // Fetch the messages for the chat with pagination
     const messages = await Message.find({ chatId: chat._id })

@@ -4,12 +4,12 @@ import Post from "../../../models/Post";
 import notificationService from "../../services/notifications/notificationService";
 import { generateContent } from "../../services/notifications/generateContent";
 import { mapPostContent, populatePosts } from "../../../utils/utils";
-import broadcast from "../../services/socket/broadcast";
+import { broadcastToUser } from "../../services/socket/broadcast";
 
 const likePost = async (req: Request, res: Response) => {
   const user = req?.user as IUser;
   const postId = req.params.id;
-  
+
   try {
     const post = await Post.findById(postId);
     if (!post) {
@@ -22,12 +22,14 @@ const likePost = async (req: Request, res: Response) => {
     if (hasLiked) {
       console.log(`Disliking post with postId: ${postId}`);
       // Remove the user's _id from the likes array
-      post.likes = (post.likes as string[]).filter((userId) => userId !== user._id);
+      post.likes = (post.likes as string[]).filter(
+        (userId) => userId !== user._id
+      );
     } else {
       console.log(`Liking post with postId: ${postId}`);
       // Add the user's _id to the likes array
       post.likes.push(user._id);
-      
+
       // Add notification to the user who wrote the post
       const notif = await notificationService.createNotification(
         user._id,
@@ -40,7 +42,7 @@ const likePost = async (req: Request, res: Response) => {
           `Failed to create a likePost notification from userId ${post.user} to ${user._id}`
         );
       }
-      broadcast(notif, post.user, "newNotification");
+      broadcastToUser(notif, post.user, "newNotification");
     }
 
     // Save the updated post
@@ -48,12 +50,11 @@ const likePost = async (req: Request, res: Response) => {
     await populatePosts(post);
     const mappedPost = await mapPostContent(post);
 
-    return res
-      .status(200)
-      .json({
-        message: `Post ${hasLiked ? "disliked" : "liked"} successfully`,
-        postData: mappedPost.postsData[0], media: mappedPost.media
-      });
+    return res.status(200).json({
+      message: `Post ${hasLiked ? "disliked" : "liked"} successfully`,
+      postData: mappedPost.postsData[0],
+      media: mappedPost.media,
+    });
   } catch (err: any) {
     console.error("Error liking/disliking post:", err);
     return res.status(500).json({ message: "Internal Server Error" });
