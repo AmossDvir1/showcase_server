@@ -168,6 +168,7 @@ export const createSession = (
   req: Request
 ): ISession => {
   const ip = (req.ip || req.socket.remoteAddress) ?? "";
+  console.log(ip)
   const geo = geoip.lookup(ip);
   const device = {
     osName: req?.body?.osName || "",
