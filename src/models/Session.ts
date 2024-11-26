@@ -5,7 +5,7 @@ export interface ISession extends Document {
   _id: string;
   userId: string;
   token: string;
-  device?: { osName: string; browserName: string };
+  device?: { osName: string; browserName: string, deviceType: string };
   location?: string;
   createdAt: Date;
   updatedAt: Date;
@@ -30,6 +30,7 @@ const sessionSchema = new Schema<ISession>(
       type: {
         osName: { type: String, default: "" },
         browserName: { type: String, default: "" },
+        deviceType: { type: String, default: "" },
       },
       default: "Unknown Device",
     },
