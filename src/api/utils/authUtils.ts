@@ -176,8 +176,9 @@ export const createSession = (
   console.log("Client IP:", ip);
   const geo = geoip.lookup(ip);
   const device = {
-    osName: req?.body?.osName || "",
-    browserName: req?.body?.browserName || "",
+    osName: req?.body?.deviceInfo?.osName || "",
+    browserName: req?.body?.deviceInfo?.browserName || "",
+    deviceType: req?.body?.deviceInfo?.deviceType || "",
   };
 
   // Save a new session

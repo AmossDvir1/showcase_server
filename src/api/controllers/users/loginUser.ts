@@ -7,7 +7,6 @@ import {
   COOKIE_OPTIONS,
   createSession,
 } from "../../utils/authUtils";
-import Session from "../../../models/Session";
 
 dotenv.config();
 
