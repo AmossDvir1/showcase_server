@@ -167,14 +167,19 @@ export const createSession = (
   token: string,
   req: Request
 ): ISession => {
-  const ip = (req.ip || req.socket.remoteAddress) ?? "";
-  console.log(ip)
+  const ip =
+    (req.headers["x-forwarded-for"]?.toString().split(",")[0] ||
+      req.ip ||
+      req.socket.remoteAddress ||
+      "") ??
+    "";
+  console.log("Client IP:", ip);
   const geo = geoip.lookup(ip);
   const device = {
     osName: req?.body?.osName || "",
     browserName: req?.body?.browserName || "",
   };
-  
+
   // Save a new session
   const newSession = new Session({
     userId,

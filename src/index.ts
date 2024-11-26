@@ -23,7 +23,7 @@ const db = connect();
 if (!db) {
   console.error("There was an error during Database connection");
 }
-
+app.set('trust proxy', true)
 app.use(
   cors({
     origin: [
