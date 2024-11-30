@@ -32,7 +32,7 @@ const sessionSchema = new Schema<ISession>(
         browserName: { type: String, default: "" },
         deviceType: { type: String, default: "" },
       },
-      default: "Unknown Device",
+      default: {osName: "", browserName: "", deviceType: ""},
     },
     location: {
       type: String,
