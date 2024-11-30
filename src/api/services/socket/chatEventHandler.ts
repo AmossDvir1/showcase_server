@@ -5,6 +5,8 @@ import { areUsersFriends } from "../../controllers/relationships/utils";
 import { broadcastToSession, broadcastToUser } from "./broadcast";
 import { getAllSocketsByUserId } from "./socketConnections";
 
+const typingUsers: { [key: string]: NodeJS.Timeout | null } = {}; // Store typing timeouts by userId
+
 const sendMessage = async (
   socket: Socket,
   data: { friendId: string; content: string }
@@ -88,6 +90,32 @@ const sendMessage = async (
   }
 };
 
+const typing = async (socket: Socket, data: { friendId: string; isTyping: boolean }) => {
+  try {
+    const senderId = socket.user?.id;
+
+    // Validate if senderId exists
+    if (!senderId) {
+      return socket.emit("error", { message: "Sender not authenticated!" });
+    }
+
+    const { friendId, isTyping } = data;
+
+    // Broadcast typing status to the recipient (friend)
+    const dataToBroadcast = { friendId: senderId, isTyping };
+
+    // Emit the "typing" event to the recipient's sockets
+    broadcastToUser(dataToBroadcast, friendId, "typing");
+
+    console.log(`User ${senderId} is typing to user ${friendId}: ${isTyping}`);
+  } catch (error) {
+    console.error("Error in typing event handler:", error);
+    socket.emit("error", {
+      message: "Something went wrong while notifying typing status.",
+    });
+  }
+};
+
 const getConversation = async (
   socket: Socket,
   data: { friendId: string; limit?: number; skip?: number }
@@ -145,4 +173,4 @@ const getConversation = async (
   }
 };
 
-export { sendMessage, getConversation };
+export { sendMessage, getConversation, typing };

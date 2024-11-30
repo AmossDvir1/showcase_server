@@ -6,7 +6,7 @@ import {
 } from "./socketConnections";
 import { getOnlineFriendsSockets } from "./retrieveOnlineFriends";
 import { IUser } from "../../../models/User";
-import { sendMessage, getConversation } from "./chatEventHandler";
+import { sendMessage, getConversation, typing } from "./chatEventHandler";
 import { broadcastToUser } from "./broadcast";
 
 export const initializeSocket = (io: Server) => {
@@ -35,6 +35,11 @@ export const initializeSocket = (io: Server) => {
     // Handle sendMessage event
     socket.on("sendMessage", async (data) => {
       await sendMessage(socket, data);
+    });
+
+    // Handle start typing event
+    socket.on("typing", async (data) => {
+      await typing(socket, data);
     });
 
     // Handle getConversation event
