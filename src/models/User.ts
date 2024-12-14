@@ -15,7 +15,7 @@ export interface IUser extends Document {
   hashedOtp: string;
   otpExpiration: Date | null;
   urlMapping: string;
-  // profilePicture: Schema.Types.
+  fullName: string;
 }
 
 export interface IUserDetails {
@@ -76,6 +76,31 @@ const userSchema = new Schema<IUser>({
   hashedOtp: { type: String, default: "" },
   otpExpiration: { type: Date, default: null },
   urlMapping: { type: String, unique: true, lowercase: true, index: true },
+  fullName: {
+    type: String,
+    index: true,
+    trim: true,
+  },
+});
+
+// Add pre-save middleware to generate fullName
+userSchema.pre("save", function (next) {
+  const doc = this;
+  doc.fullName = `${doc.firstName || ""} ${doc.lastName || ""}`.trim();
+  next();
+});
+
+// Add pre-findOneAndUpdate middleware
+userSchema.pre("findOneAndUpdate", function (next) {
+  const update = this.getUpdate() as IUser;
+
+  // Check if firstName or lastName are being updated
+  if (update.firstName || update.lastName) {
+    const firstName = update.firstName || this.get("firstName");
+    const lastName = update.lastName || this.get("lastName");
+    update.fullName = `${firstName || ""} ${lastName || ""}`.trim();
+  }
+  next();
 });
 
 userSchema.set("toJSON", {
@@ -102,6 +127,8 @@ userSchema.set("toJSON", {
     return ret;
   },
 });
+
+userSchema.index({ firstName: 1, lastName: 1 });
 
 userSchema.plugin(passportLocalMongoose);
 
