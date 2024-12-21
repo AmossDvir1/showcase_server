@@ -3,13 +3,9 @@ import { getUserFriendsIds } from "../../controllers/relationships/getUserFriend
 import getUsersByIds from "../../controllers/users/getUsersByIds";
 import socketConnections from "./socketConnections";
 
-export const getOnlineFriendsSockets = async (userId: string) => {
-  const friends = await getUserFriendsIds(userId);
-  if (!friends) return [];
-  const onlineFriendsIds = friends.filter(
-    (friendId: string) => socketConnections[friendId]
-  );
-
+const getOnlineFriendsSockets = async (userId: string) => {
+  
+const onlineFriendsIds = await getOnlineFriendsIds(userId);
   let onlineFriends: any = await getUsersByIds(onlineFriendsIds);
   onlineFriends = await Promise.all(
     onlineFriends.map(async (friend: IUser) => {
@@ -19,3 +15,14 @@ export const getOnlineFriendsSockets = async (userId: string) => {
   );
   return onlineFriends;
 };
+
+const getOnlineFriendsIds = async (userId: string) => {
+  const friends = await getUserFriendsIds(userId);
+  if (!friends) return [];
+  const onlineFriendsIds = friends.filter(
+    (friendId: string) => socketConnections[friendId]
+  );
+  return onlineFriendsIds;
+}
+
+export { getOnlineFriendsSockets, getOnlineFriendsIds }
