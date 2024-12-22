@@ -36,7 +36,7 @@ const sendMessage = async (
     if (!chat) {
       chat = new Chat({
         participants: [senderId, friendId],
-        lastMessage: { text: null, createdAt: new Date() },
+        lastMessage: { content: null, createdAt: new Date() },
       });
       await chat.save();
     }
@@ -56,7 +56,7 @@ const sendMessage = async (
     await Chat.updateOne(
       { _id: chatId },
       {
-        $set: { lastMessage: { text: content, createdAt: newMessage.createdAt } },
+        $set: { lastMessage: { content, createdAt: newMessage.createdAt } },
       }
     );
 
