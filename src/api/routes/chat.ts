@@ -1,6 +1,6 @@
 import express from "express";
 import { checkAuthentication } from "../utils/authUtils";
-import { getChatPreviews } from "../controllers/chat/getChatPreviews";
+import { getChatPreviews } from "../controllers/chats/getChatPreviews";
 const chatRoute = express.Router();
 
 

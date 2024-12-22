@@ -3,7 +3,7 @@ import { v4 as uuidv4 } from "uuid";
 
 // Define the LastMessage interface
 interface LastMessage {
-  text: string;
+  content: string;
   createdAt: Date | null;
 }
 
@@ -41,7 +41,7 @@ const chatSchema = new Schema<Chat>(
       default: Date.now,
     },
     lastMessage: {
-      text: {
+      content: {
         type: String,
         default: '',
       },
