@@ -51,7 +51,7 @@ export const initializeSocket = (io: Server) => {
     onlineFriends.forEach(async (friend: IUser) => {
       // await socket.user?.populate("profilePicture");
       const dataToBroadcast = {
-        friendOnline: socket.user?.id,
+        id: socket.user?.id,
       };
       broadcastToUser(dataToBroadcast, friend.id, "friendOnline");
     });

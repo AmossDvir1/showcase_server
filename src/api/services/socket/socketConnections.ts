@@ -48,7 +48,7 @@ export const removeSocketConnection = (
   // Notify the user's friends that they are offline
   onlineFriends.forEach((friend) => {
     const dataToBroadcast = {
-      friendOffline: socket.user,
+      id: socket.user,
     };
     broadcastToUser(dataToBroadcast, friend.id, "friendOffline");
   });
