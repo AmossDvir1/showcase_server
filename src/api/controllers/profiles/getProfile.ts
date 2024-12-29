@@ -44,7 +44,7 @@ const getProfile = async (req: Request, res: Response) => {
           username: user?.username,
           id: user?._id,
           urlMapping: user?.urlMapping,
-          profilePicture: profilePicture?.imageStringBase64 || null,
+          profilePicture,
           coverPhoto: coverPhoto?.imageStringBase64 || null,
           profile: userSettings?.profile,
         });

@@ -2,6 +2,16 @@ import { Schema, model, Document } from "mongoose";
 import { v4 as uuidv4 } from "uuid";
 import { ImagePurpose } from "../global";
 
+export interface ImageOffset {
+  x: number;
+  y: number;
+}
+
+interface ImageDimensions {
+  width: number;
+  height: number;
+}
+
 export interface IPicture extends Document {
   userId: { type: string; ref: "User" };
   _id: string;
@@ -9,6 +19,8 @@ export interface IPicture extends Document {
   mimeType?: string;
   imageStringBase64: string;
   purpose: ImagePurpose;
+  imageOffset: ImageOffset;
+  originalDimensions: ImageDimensions;
 }
 
 const PictureSchema = new Schema<IPicture>({
@@ -30,11 +42,16 @@ const PictureSchema = new Schema<IPicture>({
     required: true,
   },
   purpose: { type: String, required: true, default: "profile" },
+  imageOffset: {
+    type: { x: { type: Number }, y: { type: Number } },
+    default: null,
+  },
+  originalDimensions: {
+    type: { width: { type: Number }, height: { type: Number } },
+    default: null,
+  },
 });
 
-const Picture = model<IPicture>(
-  "Picture",
-  PictureSchema
-);
+const Picture = model<IPicture>("Picture", PictureSchema);
 
 export default Picture;
