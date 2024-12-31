@@ -56,7 +56,7 @@ const sendMessage = async (
     await Chat.updateOne(
       { _id: chatId },
       {
-        $set: { lastMessage: { content, createdAt: newMessage.createdAt } },
+        $set: { lastMessage: { content, createdAt: newMessage.createdAt, sender: senderId } },
       }
     );
 
