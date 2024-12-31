@@ -1,10 +1,11 @@
-import mongoose, { Document, Schema } from 'mongoose';
+import mongoose, { Document, Schema } from "mongoose";
 import { v4 as uuidv4 } from "uuid";
 
 // Define the LastMessage interface
 interface LastMessage {
   content: string;
   createdAt: Date | null;
+  sender: string;
 }
 
 // Define the Chat interface extending Mongoose's Document
@@ -29,7 +30,7 @@ const chatSchema = new Schema<Chat>(
       required: true,
       validate: {
         validator: (v: string[]) => v.length >= 2,
-        message: 'A chat must have at least two participants.',
+        message: "A chat must have at least two participants.",
       },
     },
     participantsKey: {
@@ -43,11 +44,15 @@ const chatSchema = new Schema<Chat>(
     lastMessage: {
       content: {
         type: String,
-        default: '',
+        default: "",
       },
       createdAt: {
         type: Date,
         default: null,
+      },
+      sender: {
+        type: String,
+        default: "",
       },
     },
   },
@@ -57,16 +62,19 @@ const chatSchema = new Schema<Chat>(
 );
 
 // Pre-save hook to normalize participants and set participantsKey
-chatSchema.pre<Chat>(/^(updateOne|save|findOneAndUpdate|create)/, async function (next) {
-  this.participants?.sort(); // Ensure consistent order
-  this.participantsKey = this.participants?.join('|'); // Concatenate for unique key
-  next();
-});
+chatSchema.pre<Chat>(
+  /^(updateOne|save|findOneAndUpdate|create)/,
+  async function (next) {
+    this.participants?.sort(); // Ensure consistent order
+    this.participantsKey = this.participants?.join("|"); // Concatenate for unique key
+    next();
+  }
+);
 
 // Create a unique index for the participantsKey
 chatSchema.index({ participantsKey: 1 }, { unique: true });
 
 // Export the Chat model
-const ChatModel = mongoose.model<Chat>('Chat', chatSchema);
+const ChatModel = mongoose.model<Chat>("Chat", chatSchema);
 
 export default ChatModel;
