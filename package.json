@@ -4,16 +4,16 @@
   "description": "",
   "main": "index.js",
   "engines": {
-  "node": ">=20.10.0 <=22.10.0"
-},
+    "node": ">=20.10.0 <=22.10.0"
+  },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "npx nodemon",
-    "build": "rimraf ./build && tsc",
-    "prodStart": "npm run build && node build/index.js"
+    "build": "rimraf ./dist && node build.js",
+    "prodStart": "npm run build && node dist/index.js"
   },
   "keywords": [],
-  "author": "",
+  "author": "Amoss Dvir",
   "license": "ISC",
   "devDependencies": {
     "@types/bcrypt": "^5.0.0",
@@ -29,6 +29,7 @@
     "@types/passport-local": "^1.0.35",
     "@types/string-similarity": "^4.0.0",
     "@types/ws": "^8.5.5",
+    "esbuild": "^0.24.2",
     "nodemon": "^2.0.20",
     "rimraf": "^4.1.2",
     "ts-node": "^10.9.1",

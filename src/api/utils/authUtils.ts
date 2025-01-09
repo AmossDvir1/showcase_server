@@ -11,11 +11,17 @@ import bcrypt from "bcrypt";
 import geoip from "geoip-lite";
 dotenv.config();
 
+const parseEnvNumber = (value: string | undefined, defaultValue: number): number => {
+  if (!value) return defaultValue;
+  const parsed = parseInt(value, 10);
+  return isNaN(parsed) ? defaultValue : parsed;
+};
+
 export const COOKIE_OPTIONS: CookieOptions = {
   httpOnly: true,
   secure: true,
   signed: true,
-  maxAge: eval(process.env.REFRESH_TOKEN_EXPIRY ?? (10).toString()) * 1000,
+  maxAge: parseEnvNumber(process.env.REFRESH_TOKEN_EXPIRY, 60 * 60 * 24) * 1000,
   sameSite: "none",
 };
 
@@ -24,8 +30,8 @@ export const generateAccessToken = (userId: string): string | null => {
     return null;
   }
   return jwt.sign({ id: userId }, process.env.JWT_SECRET as string, {
-    expiresIn: eval(
-      process.env.ACCESS_TOKEN_EXPIRY ?? (60 * 60 * 24).toString()
+    expiresIn: parseEnvNumber(
+      process.env.ACCESS_TOKEN_EXPIRY, 60 * 15
     ),
   });
 };
@@ -38,8 +44,8 @@ export const generateRefreshToken = (userId: string): ISession | null => {
     { id: userId },
     process.env.REFRESH_TOKEN_SECRET as string,
     {
-      expiresIn: eval(
-        process.env.REFRESH_TOKEN_EXPIRY ?? (60 * 60 * 24).toString()
+      expiresIn: parseEnvNumber(
+        process.env.REFRESH_TOKEN_EXPIRY, 60 * 60 * 24
       ),
     }
   );
@@ -191,4 +197,4 @@ export const createSession = (
   return newSession;
 };
 
-module.exports.verifyUser = passport.authenticate("jwt", { session: false });
+export const verifyUser = passport.authenticate("jwt", { session: false });
