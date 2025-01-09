@@ -1,5 +1,5 @@
 import * as passportLocal from 'passport-local';
-import User from "../../models/User";
+import { User } from "../../models/models";
 import passport from "passport";
 const LocalStrategy = passportLocal.Strategy;
 

@@ -1,4 +1,4 @@
-import User from "../../../models/User";
+import { User } from "../../../models/models";
 
 const getUsersByIds = async (userIds: string[]) => {
   try {
