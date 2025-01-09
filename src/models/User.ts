@@ -132,5 +132,6 @@ userSchema.index({ firstName: 1, lastName: 1 });
 
 userSchema.plugin(passportLocalMongoose);
 
-const User = mongoose.model<IUser>("User", userSchema);
+// const User = mongoose.model<IUser>("User", userSchema);
+const User = mongoose.models.User || mongoose.model<IUser>("User", userSchema);
 export default User;
