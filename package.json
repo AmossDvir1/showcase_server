@@ -10,7 +10,7 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "npx nodemon",
     "build": "rimraf ./build && tsc",
-    "prodStart": "npm run build && node build/index.js"
+    "prodStart": "npm run build && node dist/index.js"
   },
   "keywords": [],
   "author": "Amoss Dvir",
