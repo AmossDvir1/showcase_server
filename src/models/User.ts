@@ -1,4 +1,4 @@
-import { Schema, model, Document } from "mongoose";
+import mongoose, { Schema, model, Document } from "mongoose";
 import { v4 as uuidv4 } from "uuid";
 import passportLocalMongoose from "passport-local-mongoose";
 import { IPicture } from "./Picture";
@@ -132,4 +132,4 @@ userSchema.index({ firstName: 1, lastName: 1 });
 
 userSchema.plugin(passportLocalMongoose);
 
-export default model<IUser>("User", userSchema);
+export default mongoose.models.User || mongoose.model<IUser>("User", userSchema);
