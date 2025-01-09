@@ -5,7 +5,7 @@ import {
   removeSocketConnection,
 } from "./socketConnections";
 import { getOnlineFriendsSockets } from "./retrieveOnlineFriends";
-import { IUser } from "../../../models/User";
+import User, { IUser } from "../../../models/User";
 import { sendMessage, getConversation, typing } from "./chatEventHandler";
 import { broadcastToUser } from "./broadcast";
 import { getPastChatsForUser } from "../../controllers/chats/getPastChats";

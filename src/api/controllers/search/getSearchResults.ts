@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import { User } from "../../../models/models";
+import User from "../../../models/User";
 
 const getSearchResults = async (req: Request, res: Response) => {
   let { q } = req.query;

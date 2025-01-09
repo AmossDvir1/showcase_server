@@ -1,6 +1,5 @@
 import { Request, Response } from "express";
-import { IUser } from "../../../models/User";
-import { User } from "../../../models/models";
+import User, { IUser } from "../../../models/User";
 import Relationship from "../../../models/Relationship";
 
 const getRelationship = async (req: Request, res: Response) => {
@@ -32,18 +31,22 @@ const getRelationship = async (req: Request, res: Response) => {
     if (existingRelationship?.relState) {
       if (existingRelationship.relState === "friends") {
         return res
-          .status(200)
-          .json({ relationship: existingRelationship.relState });
+        .status(200)
+        .json({ relationship: existingRelationship.relState });
       }
       // User A (the current user) requested from user B:
       else if (existingRelationship.user_first_id === userAId) {
         console.log(user.username + " pending " + userB.username);
-        return res.status(200).json({ relationship: "request_sent" });
+        return res
+          .status(200)
+          .json({ relationship: "request_sent" });
       }
       // User B requested from user A (the current user):
       else if (existingRelationship.user_first_id === userBId) {
         console.log(userB.username + " pending " + user.username);
-        return res.status(200).json({ relationship: "pending_approval" });
+        return res
+          .status(200)
+          .json({ relationship: "pending_approval" });
       }
       return res
         .status(200)

@@ -1,7 +1,5 @@
 import { Request, Response } from "express";
-import { IUser } from "../../../models/User";
-import {User} from "../../../models/models";
-
+import User, { IUser } from "../../../models/User";
 import Post from "../../../models/Post";
 import { getFriendsPosts } from "./getFriendsPosts";
 import {

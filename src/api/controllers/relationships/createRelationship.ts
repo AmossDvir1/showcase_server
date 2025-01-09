@@ -1,6 +1,5 @@
 import { Request, Response } from "express";
-import { IUser } from "../../../models/User";
-import { User } from "../../../models/models";
+import User, { IUser } from "../../../models/User";
 import Relationship from "../../../models/Relationship";
 import notificationService from "../../services/notifications/notificationService";
 import { generateContent } from "../../services/notifications/generateContent";

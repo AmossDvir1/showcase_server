@@ -1,5 +1,5 @@
 import { NotificationContent } from "../../../global";
-import { User } from "../../../models/models";
+import User from "../../../models/User";
 
 const generateContent = async (
   type: NotificationContent,
