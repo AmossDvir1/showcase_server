@@ -14,6 +14,7 @@ const connectToDB = async () => {
   } catch (err: any) {
     if (err instanceof Error) {
       console.error(`Error connecting to database: ${err.message}`);
+      console.error(err);
     } else {
       console.error(`Unknown error connecting to database: ${err}`);
     }

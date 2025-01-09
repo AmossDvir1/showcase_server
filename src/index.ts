@@ -45,7 +45,7 @@ app.use(function (req, res, next) {
   res.header("Access-Control-Allow-Origin", req.headers.origin);
   next();
 });
-app.use(passport.initialize());
+// app.use(passport.initialize());
 
 console.log(`Running on ${process.env.NODE_ENV ?? "development"} environment`);
 app.use(bodyParser.urlencoded({ limit: "50mb", extended: true }));
