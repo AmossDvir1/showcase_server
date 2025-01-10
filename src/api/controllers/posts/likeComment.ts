@@ -28,7 +28,7 @@ const likeComment = async (req: Request, res: Response) => {
     }
 
     // Check if the user has already liked the comment
-    const hasLiked = comment.likes.includes(user._id);
+    const hasLiked = comment.likes.includes(user.id);
 
     // If the user has liked the comment, remove the like; otherwise, add the like
     if (hasLiked) {
@@ -36,14 +36,14 @@ const likeComment = async (req: Request, res: Response) => {
       comment.likes = comment.likes.filter((userId) => userId !== user._id);
     } else {
       // Add the user's _id to the likes array
-      comment.likes.push(user._id);
+      comment.likes.push(user.id);
 
       // Add notification to the user who wrote the comment
       const notif = await notificationService.createNotification(
-        user._id,
+        user.id,
         comment.user,
         "likeComment",
-        await generateContent("likeComment", user._id, comment.user)
+        await generateContent("likeComment", user.id, comment.user)
       );
       if (!notif) {
         console.error(

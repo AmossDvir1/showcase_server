@@ -17,7 +17,7 @@ const logoutUser = async (req: Request, res: Response) => {
     });
     if (sessionId){
       // Remove socket and broadcast it to all connected friends:
-      const socket = getSocketByUserId(user._id, sessionId);
+      const socket = getSocketByUserId(user.id, sessionId);
       if (socket) {
         // Remove the socket from the centralized store
         const onlineFriends = await getOnlineFriendsSockets(socket.user?.id);

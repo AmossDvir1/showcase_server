@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import {User} from "../../../models/models";
+import User from "../../../models/User";
 import { getPicture } from "./getPicture";
 import UserSettings, { IProfile } from "../../../models/UserSettings";
 

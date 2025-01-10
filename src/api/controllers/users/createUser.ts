@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import { User } from "../../../models/models";
+import User from "../../../models/User";
 import {
   generateAccessToken,
   generateRefreshToken,
@@ -68,8 +68,8 @@ const createUser = async (req: Request, res: Response) => {
     try {
       const registeredUser = await User.register(user, userData.password);
       await createDefaultSettings(registeredUser?.id);
-      const accessToken = generateAccessToken(registeredUser._id);
-      const refreshToken = generateRefreshToken(registeredUser._id);
+      const accessToken = generateAccessToken(registeredUser.id);
+      const refreshToken = generateRefreshToken(registeredUser.id);
       if (refreshToken === null || accessToken === null) {
         return res
           .status(500)
@@ -82,7 +82,7 @@ const createUser = async (req: Request, res: Response) => {
       );
 
       // Save a new session
-      const newSession = createSession(user._id, refreshToken.token, req);
+      const newSession = createSession(user.id, refreshToken.token, req);
       await newSession.save();
 
       savedUser = savedUser.toObject();

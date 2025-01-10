@@ -1,7 +1,7 @@
 import passport from "passport";
 import { Strategy as JwtStrategy, StrategyOptions } from "passport-jwt";
 import { ExtractJwt } from "passport-jwt";
-import { User } from "../../models/models";
+import User from "../../models/User";
 import { IUser } from "../../models/User";
 
 const opts: StrategyOptions = {

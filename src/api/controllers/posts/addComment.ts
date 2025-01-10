@@ -25,7 +25,7 @@ const addComment = async (req: Request, res: Response) => {
     const newComment = {
       content,
       likes: [],
-      user: user._id,
+      user: user.id,
       _id: uuidv4(),
       createdAt: new Date(),
       updatedAt: new Date(),
@@ -37,10 +37,10 @@ const addComment = async (req: Request, res: Response) => {
 
     // Add notification to the user who wrote the comment
     const notif = await notificationService.createNotification(
-      user._id,
+      user.id,
       post?.user,
       "comment",
-      await generateContent("comment", user._id, post.user)
+      await generateContent("comment", user.id, post.user)
     );
     if (!notif) {
       console.error(

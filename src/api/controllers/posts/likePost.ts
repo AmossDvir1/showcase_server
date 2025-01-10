@@ -16,7 +16,7 @@ const likePost = async (req: Request, res: Response) => {
       return res.status(400).json({ message: "Post not found" });
     }
     // Check if the user has already liked the post
-    const hasLiked = post.likes.includes(user._id);
+    const hasLiked = post.likes.includes(user.id);
 
     // If the user has liked the post, remove the like; otherwise, add the like
     if (hasLiked) {
@@ -28,14 +28,14 @@ const likePost = async (req: Request, res: Response) => {
     } else {
       console.log(`Liking post with postId: ${postId}`);
       // Add the user's _id to the likes array
-      post.likes.push(user._id);
+      post.likes.push(user.id);
 
       // Add notification to the user who wrote the post
       const notif = await notificationService.createNotification(
-        user._id,
+        user.id,
         post.user,
         "likePost",
-        await generateContent("likePost", user._id, post.user)
+        await generateContent("likePost", user.id, post.user)
       );
       if (!notif) {
         console.error(

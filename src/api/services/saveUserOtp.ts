@@ -1,5 +1,5 @@
 import mongoose from "mongoose";
-import { User } from "../../models/models";
+import User from "../../models/User";
 
 export const saveUserOtp = async (
   userId: string,

@@ -54,7 +54,8 @@ const populatePosts = async (posts: IPost | IPost[]) => {
     return Promise.all(posts.map(populateSinglePost));
   } else {
     // If it's a single post, just populate it
-    return populateSinglePost(posts);
+    const singlePopulated = await populateSinglePost(posts);
+    return [singlePopulated];
   }
 };
 

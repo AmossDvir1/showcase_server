@@ -1,9 +1,7 @@
 import { Request, Response } from "express";
 import { rankDocuments } from "../../services/search/rank";
 import Project from "../../../models/Project";
-import { IUser } from "../../../models/User";
-import { User } from "../../../models/models";
-
+import User, { IUser } from "../../../models/User";
 import { RELEVANCE_THRESHOLD } from "../../../utils/constants";
 import { PipelineStage } from "mongoose";
 

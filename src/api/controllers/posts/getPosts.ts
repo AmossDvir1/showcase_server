@@ -1,25 +1,18 @@
 import { Request, Response } from "express";
-import { IUser } from "../../../models/User";
-import {User} from "../../../models/models";
-
+import User, { IUser } from "../../../models/User";
 import Post from "../../../models/Post";
 import { getFriendsPosts } from "./getFriendsPosts";
-import {
-  mapPostContent,
-  populatePosts,
-} from "../../../utils/utils";
+import { mapPostContent, populatePosts } from "../../../utils/utils";
 
 const getMyPosts = async (req: Request, res: Response) => {
   const user = req?.user as IUser;
   try {
-    const friendsPosts = await getFriendsPosts(user._id);
-    let myPosts = await Post.find({ user: user._id });
+    const friendsPosts = await getFriendsPosts(user.id);
+    let myPosts = await Post.find({ user: user.id });
     await populatePosts(myPosts);
-    
 
-    const allPosts = myPosts.concat(friendsPosts)
-      .sort((a, b) => Number(b.updatedAt) - Number(a.updatedAt));
-    
+    const allPosts = [...myPosts, ...friendsPosts].sort((a, b) => Number(b.updatedAt) - Number(a.updatedAt));
+
     let mappedPosts = await mapPostContent(allPosts);
     const postsData = await Promise.all(
       allPosts.map(async (post) => {
@@ -36,7 +29,7 @@ const getMyPosts = async (req: Request, res: Response) => {
         };
       })
     );
-    mappedPosts = {...mappedPosts, postsData: postsData}
+    mappedPosts = { ...mappedPosts, postsData: postsData };
     return res.status(200).json({ posts: mappedPosts });
   } catch (err: any) {
     console.error("Error in retreiving posts: ", err);
@@ -55,7 +48,7 @@ const getUserPosts = async (req: Request, res: Response) => {
     const postsData = posts.map((post) => {
       return {
         _id: post._id,
-        liked: post?.likes?.includes(user._id),
+        liked: post?.likes?.includes(user.id),
         likes: post.likes,
         comments: post.comments,
         isExposed: post.isExposed,
@@ -65,7 +58,7 @@ const getUserPosts = async (req: Request, res: Response) => {
       };
     });
 
-    mappedPosts = {...mappedPosts, postsData }
+    mappedPosts = { ...mappedPosts, postsData };
     return res.status(200).json({ posts: mappedPosts });
   } catch (err: any) {
     console.error(err);

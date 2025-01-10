@@ -1,4 +1,4 @@
-import { User } from "../../models/models";
+import User from "../../models/User";
 
 const findUserById = async (id: string) => {
   try {
