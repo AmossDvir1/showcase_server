@@ -1,5 +1,6 @@
 import { Request, Response } from "express";
-import User, { IUser } from "../../../models/User";
+import { IUser } from "../../../models/User";
+import {User} from "../../../models/models";
 import Relationship from "../../../models/Relationship";
 
 const confirmRelationship = async (req: Request, res: Response) => {

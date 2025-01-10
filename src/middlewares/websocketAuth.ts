@@ -2,7 +2,7 @@ import { Socket } from "socket.io";
 import { ExtendedError } from "socket.io/dist/namespace";
 import jwt from "jsonwebtoken";
 import { IUser } from "../models/User";
-import UserModel from "../models/User"; // Assuming you have a UserModel to interact with the database
+import { User } from "../models/models"; // Assuming you have a UserModel to interact with the database
 
 // Define a custom interface for the socket to include the `user` property
 interface IAuthenticatedSocket extends Socket {
@@ -28,7 +28,7 @@ const websocketAuth = async (socket: IAuthenticatedSocket, next: (err?: Extended
     }
 
     // Fetch the full user from the database using the `userId` from the token
-    const user = await UserModel.findById(decoded.id).exec();
+    const user = await User.findById(decoded.id).exec();
     if (!user) {
       return next(new Error("User not found"));
     }

@@ -1,6 +1,6 @@
 import { Request, Response } from "express";
 import Notification from "../../../models/Notification";
-import User, { IUser } from "../../../models/User";
+import { IUser } from "../../../models/User";
 
 const getNotifications = async (req: Request, res: Response) => {
   const user = req?.user as IUser;

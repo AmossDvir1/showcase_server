@@ -1,6 +1,6 @@
 import { NotificationContent } from "../../../global";
 import Notification, { INotification } from "../../../models/Notification";
-import User from "../../../models/User";
+import { User } from "../../../models/models";
 
 class NotificationService {
   // Function to create a new notification
