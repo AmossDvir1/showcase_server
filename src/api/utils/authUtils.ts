@@ -11,17 +11,11 @@ import bcrypt from "bcrypt";
 import geoip from "geoip-lite";
 dotenv.config();
 
-const parseEnvNumber = (value: string | undefined, defaultValue: number): number => {
-  if (!value) return defaultValue;
-  const parsed = parseInt(value, 10);
-  return isNaN(parsed) ? defaultValue : parsed;
-};
-
 export const COOKIE_OPTIONS: CookieOptions = {
   httpOnly: true,
   secure: true,
   signed: true,
-  maxAge: parseEnvNumber(process.env.REFRESH_TOKEN_EXPIRY, 60 * 60 * 24) * 1000,
+  maxAge: parseInt(process.env.REFRESH_TOKEN_EXPIRY??""),
   sameSite: "none",
 };
 
@@ -30,9 +24,7 @@ export const generateAccessToken = (userId: string): string | null => {
     return null;
   }
   return jwt.sign({ id: userId }, process.env.JWT_SECRET as string, {
-    expiresIn: parseEnvNumber(
-      process.env.ACCESS_TOKEN_EXPIRY, 60 * 15
-    ),
+    expiresIn: process.env.ACCESS_TOKEN_EXPIRY,
   });
 };
 
@@ -44,9 +36,7 @@ export const generateRefreshToken = (userId: string): ISession | null => {
     { id: userId },
     process.env.REFRESH_TOKEN_SECRET as string,
     {
-      expiresIn: parseEnvNumber(
-        process.env.REFRESH_TOKEN_EXPIRY, 60 * 60 * 24
-      ),
+      expiresIn: process.env.REFRESH_TOKEN_EXPIRY,
     }
   );
   return new Session({
