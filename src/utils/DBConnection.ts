@@ -9,10 +9,7 @@ const connectToDB = async () => {
     if (!process.env.DB_CONNECTION) {
       return false;
     }
-    const db = await mongoose.connect(process.env.DB_CONNECTION, {
-      useNewUrlParser: true,
-      useUnifiedTopology: true,
-    } as ConnectOptions);
+    const db = await mongoose.connect(process.env.DB_CONNECTION);
     isConnected = db.connections[0].readyState; // 1 indicates connected
     if (isConnected) {
       console.log("Connected to DB!");
