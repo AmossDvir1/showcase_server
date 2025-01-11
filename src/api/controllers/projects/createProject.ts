@@ -11,7 +11,7 @@ const createProject = async (req: Request, res: Response) => {
       data.projectName,
       data.projectDesc,
       !!data.isExposed,
-      user._id
+      user.id
     );
     if (createdProject) {
       console.log("Project created:", createdProject);

@@ -35,8 +35,8 @@ const loginUser = async (req: Request, res: Response, next: NextFunction) => {
         return res.status(401).json({ message: "No user found" });
       }
 
-      const accessToken = generateAccessToken(user._id);
-      const refreshToken = generateRefreshToken(user._id);
+      const accessToken = generateAccessToken(user.id);
+      const refreshToken = generateRefreshToken(user.id);
       if (!refreshToken) {
         return res
           .status(401)
@@ -44,7 +44,7 @@ const loginUser = async (req: Request, res: Response, next: NextFunction) => {
       }
 
       // Save a new session
-      const newSession = createSession(user._id, refreshToken.token, req);
+      const newSession = createSession(user.id, refreshToken.token, req);
       await newSession.save();
 
       // Send response with tokens

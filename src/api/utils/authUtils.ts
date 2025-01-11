@@ -15,7 +15,7 @@ export const COOKIE_OPTIONS: CookieOptions = {
   httpOnly: true,
   secure: true,
   signed: true,
-  maxAge: eval(process.env.REFRESH_TOKEN_EXPIRY ?? (10).toString()) * 1000,
+  maxAge: parseInt(process.env.REFRESH_TOKEN_EXPIRY??""),
   sameSite: "none",
 };
 
@@ -24,9 +24,7 @@ export const generateAccessToken = (userId: string): string | null => {
     return null;
   }
   return jwt.sign({ id: userId }, process.env.JWT_SECRET as string, {
-    expiresIn: eval(
-      process.env.ACCESS_TOKEN_EXPIRY ?? (60 * 60 * 24).toString()
-    ),
+    expiresIn: process.env.ACCESS_TOKEN_EXPIRY,
   });
 };
 
@@ -38,9 +36,7 @@ export const generateRefreshToken = (userId: string): ISession | null => {
     { id: userId },
     process.env.REFRESH_TOKEN_SECRET as string,
     {
-      expiresIn: eval(
-        process.env.REFRESH_TOKEN_EXPIRY ?? (60 * 60 * 24).toString()
-      ),
+      expiresIn: process.env.REFRESH_TOKEN_EXPIRY,
     }
   );
   return new Session({
@@ -191,4 +187,4 @@ export const createSession = (
   return newSession;
 };
 
-module.exports.verifyUser = passport.authenticate("jwt", { session: false });
+export const verifyUser = passport.authenticate("jwt", { session: false });

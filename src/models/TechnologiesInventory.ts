@@ -7,6 +7,7 @@ interface ITechnologiesInventoryDocument extends Document {
   category?: string; // E.g., "Programming Language", "Framework"
   icon?: string; // Optional field for UI representation
   color: string;
+  description: string;
 }
 
 const TechnologiesInventorySchema: Schema = new Schema({
@@ -18,7 +19,8 @@ const TechnologiesInventorySchema: Schema = new Schema({
   label: { type: String, required: true, unique: true },
   category: { type: String }, // Optional, e.g., "Backend", "Frontend"
   icon: { type: String }, // Optional, e.g., URL for an icon or a CSS class
-  color: {type: String }
+  color: { type: String },
+  description: { type: String },
 });
 
 export default mongoose.model<ITechnologiesInventoryDocument>(

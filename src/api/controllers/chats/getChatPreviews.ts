@@ -8,7 +8,7 @@ import { findUserById } from "../../services/findUser";
 
 const getChatPreviews = async (req: Request, res: Response) => {
   const user = req?.user as IUser;
-  const userId = user?._id;
+  const userId = user?.id;
 
   try {
     const onlineFriendsIds = await getOnlineFriendsIds(userId);

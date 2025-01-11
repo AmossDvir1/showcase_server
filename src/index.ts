@@ -32,7 +32,7 @@ app.use(
       "http://192.168.1.154:3000",
       "http://192.168.1.153:3000",
       "http://192.168.1.156:3000",
-      "http://192.168.1.167:3000",
+      "https://showcase-world.vercel.app"
     ],
     allowedHeaders: ['Content-Type', 'Authorization', 'X-Session-ID'], // Allow X-Session-ID header
     credentials: true,
@@ -45,7 +45,7 @@ app.use(function (req, res, next) {
   res.header("Access-Control-Allow-Origin", req.headers.origin);
   next();
 });
-app.use(passport.initialize());
+// app.use(passport.initialize());
 
 console.log(`Running on ${process.env.NODE_ENV ?? "development"} environment`);
 app.use(bodyParser.urlencoded({ limit: "50mb", extended: true }));

@@ -6,7 +6,7 @@ import { generateContent } from "../../services/notifications/generateContent";
 
 const createRelationship = async (req: Request, res: Response) => {
   const user = req.user as IUser;
-  const userAId = user?._id;
+  const userAId = user?.id;
   const username = req.body.addUsername;
   try {
     // Find User B's ID based on the provided username
@@ -40,9 +40,9 @@ const createRelationship = async (req: Request, res: Response) => {
     await newRelationship.save();
     const notif = await notificationService.createNotification(
       userAId,
-      userB._id,
+      userB.id,
       "friendRequest",
-      await generateContent("friendRequest", userAId, userB._id)
+      await generateContent("friendRequest", userAId, userB.id)
     );
     if (!notif) {
       console.error(

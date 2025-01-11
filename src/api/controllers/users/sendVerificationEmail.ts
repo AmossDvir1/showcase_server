@@ -41,7 +41,7 @@ const sendVerificationEmail = async (req: Request, res: Response) => {
     await transporter.sendMail(emailOptions);
     console.log("Email sent successfully");
     await saveUserOtp(
-      user._id,
+      user.id,
       hashedOtp,
       new Date(Date.now() + 15 * 60 * 1000)
     ); // 15 minutes from now
