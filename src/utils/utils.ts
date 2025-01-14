@@ -13,6 +13,7 @@ import { technologiesRoute } from "../api/routes/technologies";
 import { sessionsRoute } from "../api/routes/sessions";
 import { chatRoute } from "../api/routes/chat";
 import { roomRoute } from "../api/routes/room";
+import { aiRoute } from "../api/routes/ai";
 
 const useRoutes = (app: express.Express) => {
   app.use("/user", userRoute);
@@ -27,6 +28,7 @@ const useRoutes = (app: express.Express) => {
   app.use("/sessions", sessionsRoute);
   app.use("/chats", chatRoute);
   app.use("/rooms", roomRoute);
+  app.use("/ai", aiRoute);
 };
 
 const populatePosts = async (posts: IPost | IPost[]) => {

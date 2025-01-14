@@ -14,6 +14,11 @@
   "resolved" "https://registry.npmjs.org/@esbuild/win32-x64/-/win32-x64-0.24.2.tgz"
   "version" "0.24.2"
 
+"@google/generative-ai@^0.21.0":
+  "integrity" "sha512-7XhUbtnlkSEZK15kN3t+tzIMxsbKm/dSkKBFalj+20NvPKe1kBY7mR2P7vuijEn+f06z5+A8bVGKO0v39cr6Wg=="
+  "resolved" "https://registry.npmjs.org/@google/generative-ai/-/generative-ai-0.21.0.tgz"
+  "version" "0.21.0"
+
 "@img/sharp-win32-x64@0.33.5":
   "integrity" "sha512-MpY/o8/8kj+EcnxwvrP4aTJSWw/aZ7JIGR4aBeZkZw5B7/Jn+tY9/VNwtcoGmdT7GfggGIU4kygOMSbYnOrAbg=="
   "resolved" "https://registry.npmjs.org/@img/sharp-win32-x64/-/sharp-win32-x64-0.33.5.tgz"
