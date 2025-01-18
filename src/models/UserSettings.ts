@@ -14,11 +14,15 @@ export interface IProfile {
   relationshipStatus?: string;
   work?: IWork[] | [];
 }
+export interface IGeneral {
+  usingAIAssistant: boolean;
+}
 
 export interface IUserSettings extends Document {
   _id: string;
   userId: string;
   profile: IProfile;
+  general: IGeneral;
 }
 
 const UserSettingsSchema: Schema = new Schema({
@@ -43,6 +47,11 @@ const UserSettingsSchema: Schema = new Schema({
       },
     ],
     relationshipStatus: { type: String, default: "" }, // E.g., "Single", "Married"
+  },
+  general: {
+    type: {
+      usingAIAssistant: { type: Boolean, default: true },
+    },
   },
 });
 
